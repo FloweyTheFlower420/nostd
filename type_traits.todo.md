@@ -1,0 +1,87 @@
+ - [ ] is_member_object_pointer
+ - [ ] is_member_function_pointer
+ - [ ] is_pod
+ - [ ] is_literal_type
+ - [ ] is_scoped_enum
+ - [ ] is_constructible
+ - [ ] is_default_constructible
+ - [ ] is_copy_constructible
+ - [ ] is_move_constructible
+ - [ ] is_assignable
+ - [ ] is_copy_assignable
+ - [ ] is_move_assignable
+ - [ ] is_destructible
+ - [ ] has_virtual_destructor
+ - [ ] is_swappable
+ - [ ] alignment_of
+ - [ ] rank
+ - [ ] extent
+ - [ ] is_convertible
+ - [ ] is_layout_compatible
+ - [ ] is_pointer_interconvertible_base_of
+ - [ ] is_invocable
+ - [ ] make_signed
+ - [ ] make_unsigned
+ - [ ] aligned_storage
+ - [ ] aligned_union
+ - [ ] common_type
+ - [ ] common_reference
+ - [ ] underlying_type
+ - [ ] result_of
+ - [ ] is_pointer_interconvertible_with_class
+ - [ ] is_corresponding_member
+ - [ ] is_constant_evaluated
+ - [X] integral_constant
+ - [X] is_void
+ - [X] is_null_pointer
+ - [X] is_integral
+ - [X] is_f oating_point
+ - [X] is_array
+ - [X] is_enum
+ - [X] is_union
+ - [X] is_class
+ - [X] is_pointer
+ - [X] is_lvalue_reference
+ - [X] is_rvalue_reference
+ - [X] is_arithmetic
+ - [X] is_fundamental
+ - [X] is_scalar
+ - [X] is_object
+ - [X] is_compound
+ - [X] is_reference
+ - [X] is_member_pointer
+ - [X] is_const
+ - [X] is_volatile
+ - [X] is_trivial
+ - [X] is_trivially_copyable
+ - [X] is_standard_layout
+ - [X] has_unique_object_representations
+ - [X] is_empty
+ - [X] is_polymorphic
+ - [X] is_abstract
+ - [X] is_final
+ - [X] is_aggregate
+ - [X] is_signed
+ - [X] is_unsigned
+ - [X] is_bounded_array
+ - [X] is_unbounded_array
+ - [X] is_function
+ - [X] conditional
+ - [X] enable_if
+ - [X] decay
+ - [X] remove_cvref
+ - [X] void_t
+ - [X] conjunction
+ - [X] disjunction
+ - [X] negation
+ - [X] remove_extent
+ - [X] remove_all_extents
+ - [X] add_cv
+ - [X] remove_cv
+ - [X] remove_reference
+ - [X] add_reference
+ - [X] remove_pointer
+ - [X] add_pointer
+ - [X] type_identity
+ - [X] is_same
+ - [X] is_base_of

@@ -1,0 +1,12 @@
+[
+    {
+        "file": "bits/new.cpp",
+        "directory": ".",
+        "arguments": ["c++", "-c", "bits/new.cpp", "-o", "bits_new.o", "-nostdinc", "-Iinclude"]
+    },
+    {
+        "file": "test/type_traits.cpp",
+        "directory": ".",
+        "arguments": ["c++", "-c", "test/type_traits.cpp", "-o", "test_type_traits.o", "-nostdinc", "-Iinclude"]
+    }
+]
