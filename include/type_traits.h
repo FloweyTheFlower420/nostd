@@ -62,6 +62,9 @@ namespace std
                                           (is_void<F>::value && is_void<T>::value)>
     {
     };
+
+    template <typename F, typename T>
+    inline constexpr bool is_convertible_v = is_convertible<F, T>::value;
     // }}}
 
     // Composite type catagories {{{
@@ -711,6 +714,11 @@ namespace std
     inline constexpr bool has_virtual_destructor_v = has_virtual_destructor<T>::value;
 
     //}}}
-
+    
+    template<size_t length, size_t align = 4>
+    struct aligned_storage 
+    {
+        struct type { alignas(align) unsigned char data[length]; };
+    };
 } // namespace std
 #endif

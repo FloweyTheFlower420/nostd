@@ -6,6 +6,23 @@
 
 namespace std
 {
+    namespace detail
+    {
+#if __has_builtin(__type_pack_element)
+        template<std::size_t N, typename ...Ts>
+        struct type_pack_element { using type = __type_pack_element<N, Ts...>; };
+#else
+        template<std::size_t N, typename ...Ts> requires (N < sizeof...(Ts))
+        struct type_pack_element;
+
+        template<std::size_t N, typename T, typename ...Ts>
+        struct type_pack_element<N, T, Ts...> : type_pack_element<N - 1, Ts...> {};
+
+        template<typename T, typename ...Ts>
+        struct type_pack_element<0, T, Ts...> { using type = T; };
+#endif
+
+    }
     template <typename T>
     constexpr add_rvalue_reference_t<T> declval() noexcept
     {
@@ -51,6 +68,22 @@ namespace std
             conditional_t<!is_nothrow_move_constructible<T>::value && std::is_copy_constructible<T>::value, const T&, T &&>>(
             x);
     };
+
+    struct in_place_t {
+    explicit in_place_t() = default;
+};
+inline constexpr in_place_t in_place{};
+template <class T> struct in_place_type_t {
+    explicit in_place_type_t() = default;
+};
+template <class T>
+inline constexpr in_place_type_t<T> in_place_type{};
+template <std::size_t I> struct in_place_index_t {
+    explicit in_place_index_t() = default;
+};
+template <std::size_t I>
+inline constexpr in_place_index_t<I> in_place_index{};
+
 
 } // namespace std
 

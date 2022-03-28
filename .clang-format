@@ -7,4 +7,5 @@ NamespaceIndentation: All
 PointerAlignment: Left
 TabWidth: '4'
 AllowShortBlocksOnASingleLine: 'true'
+AllowShortFunctionsOnASingleLine: 'All'
 UseTab: Never

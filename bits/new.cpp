@@ -1,6 +1,6 @@
 #include "user_implement.h"
 #include <cstddef.h>
-#include <new>
+#include <new.h>
 
 void* operator new(std::size_t count)
 {
