@@ -5,10 +5,10 @@ namespace std
 {
     namespace detail
     {
-        template <int size, typename T, typename... Ts>
+        template<int size, typename T, typename... Ts>
         auto select_integral()
         {
-            if constexpr (sizeof(T) == size)
+            if constexpr(sizeof(T) == size)
                 return T{};
             else
             {
@@ -17,26 +17,39 @@ namespace std
             }
         }
 
-        template <int size>
-        using integral_select_t = decltype(select_integral<size, char, short, int, long, long long>());
+        template<int size>
+        using integral_select_t = decltype(select_integral<
+            size, 
+            char, 
+            short, 
+            int, 
+            long, 
+            long long
+        >());
 
-        template <int size>
-        using uintegral_select_t = decltype(select_integral<size, unsigned char, unsigned short, unsigned int, unsigned long,
-                                                            unsigned long long>());
+        template<int size>
+        using uintegral_select_t = decltype(select_integral<
+            size, 
+            unsigned char, 
+            unsigned short, 
+            unsigned int, 
+            unsigned long, 
+            unsigned long long
+        >());
 
-        template <int size>
+        template<int size>
         inline constexpr __INTMAX_TYPE__ intmax_of = (1ULL << (size * 8 - 1)) - 1;
-    } // namespace detail
-} // namespace std
+    }
+}
 
-using int8_t = std::detail::integral_select_t<1>;
-using uint8_t = std::detail::uintegral_select_t<1>;
-using int16_t = std::detail::integral_select_t<2>;
-using uint16_t = std::detail::uintegral_select_t<2>;
-using int32_t = std::detail::integral_select_t<4>;
-using uint32_t = std::detail::uintegral_select_t<4>;
-using int64_t = std::detail::integral_select_t<8>;
-using uint64_t = std::detail::uintegral_select_t<8>;
+using int8_t    = std::detail::integral_select_t<1>;
+using uint8_t   = std::detail::uintegral_select_t<1>;
+using int16_t   = std::detail::integral_select_t<2>;
+using uint16_t  = std::detail::uintegral_select_t<2>;
+using int32_t   = std::detail::integral_select_t<4>;
+using uint32_t  = std::detail::uintegral_select_t<4>;
+using int64_t   = std::detail::integral_select_t<8>;
+using uint64_t  = std::detail::uintegral_select_t<8>;
 
 using int_least8_t = int8_t;
 using uint_least8_t = uint8_t;
@@ -79,7 +92,7 @@ using uintptr_t = std::detail::uintegral_select_t<sizeof(void*)>;
 #define UINT_FAST8_MAX 4294967295
 #define UINT_FAST16_MAX 4294967295
 #define UINT_FAST32_MAX 4294967295
-#define UINT_FAST64_MAX 18, 446, 744, 073, 709, 551, 615
+#define UINT_FAST64_MAX 18446744073709551615
 
 #if defined(__x86_64__)
 using int_fast8_t = int32_t;
