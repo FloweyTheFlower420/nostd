@@ -40,10 +40,11 @@ namespace std
         {
             static constexpr T __impl()
             {
-                if constexpr(sizeof...(rest) == 0)
+                if constexpr (sizeof...(rest) == 0)
                     return v;
                 return max(v, max_comptime<T, rest...>::value);
             }
+
         public:
             inline static constexpr T value = __impl();
         };

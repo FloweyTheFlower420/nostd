@@ -26,63 +26,30 @@ namespace std
 
         template <int size>
         inline constexpr __INTMAX_TYPE__ intmax_of = (1ULL << (size * 8 - 1)) - 1;
-
-        template <int size>
-        inline constexpr __INTMAX_TYPE__ uintmax_of = (1ULL << (size * 8 - 1)) + ((1ULL << (size * 8 - 1)) - 1);
     } // namespace detail
-
-    using int8_t = std::detail::integral_select_t<1>;
-    using uint8_t = std::detail::uintegral_select_t<1>;
-    using int16_t = std::detail::integral_select_t<2>;
-    using uint16_t = std::detail::uintegral_select_t<2>;
-    using int32_t = std::detail::integral_select_t<4>;
-    using uint32_t = std::detail::uintegral_select_t<4>;
-    using int64_t = std::detail::integral_select_t<8>;
-    using uint64_t = std::detail::uintegral_select_t<8>;
-
-    using int_least8_t = int8_t;
-    using uint_least8_t = uint8_t;
-    using int_least16_t = int16_t;
-    using uint_least16_t = uint16_t;
-    using int_least32_t = int32_t;
-    using uint_least32_t = uint32_t;
-    using int_least64_t = int64_t;
-    using uint_least64_t = uint64_t;
-    using intmax_t = __INTMAX_TYPE__;
-    using uintmax_t = __UINTMAX_TYPE__;
-    using intptr_t = std::detail::integral_select_t<sizeof(void*)>;
-    using uintptr_t = std::detail::uintegral_select_t<sizeof(void*)>;
-
-#if defined(__x86_64__)
-    using int_fast8_t = int32_t;
-    using uint_fast8_t = uint32_t;
-    using int_fast16_t = int32_t;
-    using uint_fast16_t = uint32_t;
-    using int_fast32_t = int32_t;
-    using uint_fast32_t = uint32_t;
-    using int_fast64_t = int64_t;
-    using uint_fast64_t = uint64_t;
-#define INT_FAST8_MAX 2147483647
-#define INT_FAST16_MAX 2147483647
-#define INT_FAST32_MAX 2147483647
-#define INT_FAST64_MAX 9223372036854775807
-
-#define INT_FAST8_MIN -2147483648
-#define INT_FAST16_MIN -2147483648
-#define INT_FAST32_MIN -2147483648
-#define INT_FAST64_MIN -9223372036854775808
-
-#endif
 } // namespace std
 
-#define INTPTR_MAX std::detail::intmax_of<sizeof(intptr_t >)>
-#define INTMAX_MAX std::detail::intmax_of<sizeof(intmax_t >)>
+using int8_t = std::detail::integral_select_t<1>;
+using uint8_t = std::detail::uintegral_select_t<1>;
+using int16_t = std::detail::integral_select_t<2>;
+using uint16_t = std::detail::uintegral_select_t<2>;
+using int32_t = std::detail::integral_select_t<4>;
+using uint32_t = std::detail::uintegral_select_t<4>;
+using int64_t = std::detail::integral_select_t<8>;
+using uint64_t = std::detail::uintegral_select_t<8>;
 
-#define INTPTR_MIN (-std::detail::intmax_of<sizeof(intptr_t >)> - 1)
-#define INTMAX_MIN (-std::detail::intmax_of<sizeof(intmax_t >)> - 1)
-
-#define UINTPTR_MAX std::detail::uintmax_of<sizeof(uintptr_t)>
-#define UINTMAX_MAX std::detail::uintmax_of<sizeof(uintmax_t)>
+using int_least8_t = int8_t;
+using uint_least8_t = uint8_t;
+using int_least16_t = int16_t;
+using uint_least16_t = uint16_t;
+using int_least32_t = int32_t;
+using uint_least32_t = uint32_t;
+using int_least64_t = int64_t;
+using uint_least64_t = uint64_t;
+using intmax_t = __INTMAX_TYPE__;
+using uintmax_t = __UINTMAX_TYPE__;
+using intptr_t = std::detail::integral_select_t<sizeof(void*)>;
+using uintptr_t = std::detail::uintegral_select_t<sizeof(void*)>;
 
 #define INT8_MAX 127
 #define INT16_MAX 32767
@@ -112,6 +79,30 @@ namespace std
 #define UINT_FAST8_MAX 4294967295
 #define UINT_FAST16_MAX 4294967295
 #define UINT_FAST32_MAX 4294967295
-#define UINT_FAST64_MAX 18446744073709551615
+#define UINT_FAST64_MAX 18, 446, 744, 073, 709, 551, 615
+
+#if defined(__x86_64__)
+using int_fast8_t = int32_t;
+using uint_fast8_t = uint32_t;
+using int_fast16_t = int32_t;
+using uint_fast16_t = uint32_t;
+using int_fast32_t = int32_t;
+using uint_fast32_t = uint32_t;
+using int_fast64_t = int64_t;
+using uint_fast64_t = uint64_t;
+
+#define INT_FAST8_MAX 2147483647
+#define INT_FAST16_MAX 2147483647
+#define INT_FAST32_MAX 2147483647
+#define INT_FAST64_MAX 9223372036854775807
+
+#define INT_FAST8_MIN -2147483648
+#define INT_FAST16_MIN -2147483648
+#define INT_FAST32_MIN -2147483648
+#define INT_FAST64_MIN -9223372036854775808
+#endif
+
+#define INTPTR_MAX std::detail::intmax_of<sizeof(intptr_t>)>
+#define INTMAX_MAX std::detail::intmax_of(sizeof(intmax_t>)>
 
 #endif

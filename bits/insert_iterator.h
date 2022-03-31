@@ -79,9 +79,11 @@ namespace std
     class insert_iterator : public iterator<output_iterator_tag, void, void, void, void>
     {
         typedef typename C::iterator It;
+
     protected:
         C* container;
         It iter;
+
     public:
         typedef C container_type;
 

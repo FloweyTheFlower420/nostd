@@ -4,33 +4,10 @@
 
 namespace std
 {
-    class bad_alloc : public exception
-    {
-    public:
-        bad_alloc() throw()
-        {
-        }
-
-        bad_alloc(const bad_alloc&) = default;
-        bad_alloc& operator=(const bad_alloc&) = default;
-        virtual ~bad_alloc() throw();
-        virtual const char* what() const throw();
-    };
-
-    class bad_array_new_length : public bad_alloc
-    {
-    public:
-        bad_array_new_length() throw()
-        {
-        }
-
-        virtual ~bad_array_new_length() throw();
-        virtual const char* what() const throw();
-    };
-
     enum class align_val_t : size_t
     {
     };
+
     struct nothrow_t
     {
         explicit constexpr nothrow_t() = default;
@@ -70,7 +47,6 @@ namespace std
 } // namespace std
 #endif
 
-
 [[nodiscard]] void* operator new(std::size_t) throw(std::bad_alloc);
 [[nodiscard, gnu::malloc, gnu::alloc_size(1)]] void* operator new(std::size_t, std::align_val_t);
 [[nodiscard, gnu::malloc, gnu::alloc_size(1)]] void* operator new(std::size_t, const std::nothrow_t&) noexcept;
@@ -95,20 +71,10 @@ void operator delete[](void*, std::align_val_t, const std::nothrow_t&) noexcept;
 void operator delete[](void*, std::size_t) noexcept;
 void operator delete[](void*, std::size_t, std::align_val_t) noexcept;
 
-[[nodiscard]] inline void* operator new(std::size_t, void* p) noexcept
-{
-    return p;
-}
-[[nodiscard]] inline void* operator new[](std::size_t, void* p) noexcept
-{
-    return p;
-}
+[[nodiscard]] inline void* operator new(std::size_t, void* p) noexcept { return p; }
+[[nodiscard]] inline void* operator new[](std::size_t, void* p) noexcept { return p; }
 
-inline void operator delete(void*, void*) noexcept
-{
-}
-inline void operator delete[](void*, void*) noexcept
-{
-}
+inline void operator delete(void*, void*) noexcept {}
+inline void operator delete[](void*, void*) noexcept {}
 
 #endif

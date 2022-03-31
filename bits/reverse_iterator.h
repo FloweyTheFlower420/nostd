@@ -106,7 +106,7 @@ namespace std
             iter += n;
             return *this;
         }
-        
+
         template <typename ItL, typename ItR>
         [[nodiscard]] inline constexpr difference_type operator-(const reverse_iterator<ItR>& rhs)
         {
@@ -114,7 +114,6 @@ namespace std
         }
 
         [[nodiscard]] constexpr reference operator[](difference_type __n) const { return *(*this + __n); }
-
     };
 
     template <typename It>
@@ -197,7 +196,7 @@ namespace std
 
     template <typename It>
     [[nodiscard]] inline constexpr reverse_iterator<It> operator+(typename reverse_iterator<It>::difference_type n,
-                                                               const reverse_iterator<It>& lhs)
+                                                                  const reverse_iterator<It>& lhs)
     {
         return lhs + n;
     }

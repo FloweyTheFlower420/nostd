@@ -17,34 +17,22 @@ namespace std
         pointer buf;
 
     public:
-        constexpr unique_ptr() : buf(nullptr)
-        {
-        }
-        constexpr unique_ptr(std::nullptr_t)
-        {
-        }
-        constexpr explicit unique_ptr(pointer p) noexcept : buf(p)
-        {
-        }
+        constexpr unique_ptr() : buf(nullptr) {}
+        constexpr unique_ptr(std::nullptr_t) {}
+        constexpr explicit unique_ptr(pointer p) noexcept : buf(p) {}
         template <typename U>
         constexpr unique_ptr(unique_ptr<U>&& u) noexcept : buf(u.release())
         {
         }
 
-        ~unique_ptr() noexcept
-        {
-            release();
-        }
+        ~unique_ptr() noexcept { release(); }
 
         constexpr unique_ptr& operator=(unique_ptr&& r) noexcept
         {
             reset(r.buf);
             return *this;
         }
-        constexpr unique_ptr& operator=(nullptr_t) noexcept
-        {
-            release();
-        };
+        constexpr unique_ptr& operator=(nullptr_t) noexcept { release(); };
 
         constexpr pointer release() noexcept
         {
@@ -61,27 +49,12 @@ namespace std
                 delete tmp;
         }
 
-        constexpr void swap(unique_ptr& other) noexcept
-        {
-            std::swap(other.buf, buf);
-        }
-        constexpr pointer get() const noexcept
-        {
-            return buf;
-        }
-        constexpr explicit operator bool() const noexcept
-        {
-            return (bool)buf;
-        }
+        constexpr void swap(unique_ptr& other) noexcept { std::swap(other.buf, buf); }
+        constexpr pointer get() const noexcept { return buf; }
+        constexpr explicit operator bool() const noexcept { return (bool)buf; }
 
-        constexpr add_lvalue_reference_t<T> operator*() const noexcept(noexcept(*std::declval<pointer>()))
-        {
-            return *buf;
-        }
-        constexpr pointer operator->() const noexcept
-        {
-            return *buf;
-        }
+        constexpr add_lvalue_reference_t<T> operator*() const noexcept(noexcept(*std::declval<pointer>())) { return *buf; }
+        constexpr pointer operator->() const noexcept { return *buf; }
     };
 
     template <typename T>
@@ -95,12 +68,8 @@ namespace std
         pointer buf;
 
     public:
-        constexpr unique_ptr() : buf(nullptr)
-        {
-        }
-        constexpr unique_ptr(std::nullptr_t)
-        {
-        }
+        constexpr unique_ptr() : buf(nullptr) {}
+        constexpr unique_ptr(std::nullptr_t) {}
         template <typename U>
         constexpr explicit unique_ptr(U p) noexcept : buf(p)
         {
@@ -110,20 +79,14 @@ namespace std
         {
         }
 
-        ~unique_ptr() noexcept
-        {
-            release();
-        }
+        ~unique_ptr() noexcept { release(); }
 
         constexpr unique_ptr& operator=(unique_ptr&& r) noexcept
         {
             reset(r.buf);
             return *this;
         }
-        constexpr unique_ptr& operator=(nullptr_t) noexcept
-        {
-            release();
-        };
+        constexpr unique_ptr& operator=(nullptr_t) noexcept { release(); };
 
         constexpr pointer release() noexcept
         {
@@ -149,31 +112,13 @@ namespace std
                 delete[] tmp;
         }
 
-        constexpr void swap(unique_ptr& other) noexcept
-        {
-            std::swap(other.buf, buf);
-        }
-        constexpr pointer get() const noexcept
-        {
-            return buf;
-        }
-        constexpr explicit operator bool() const noexcept
-        {
-            return (bool)buf;
-        }
+        constexpr void swap(unique_ptr& other) noexcept { std::swap(other.buf, buf); }
+        constexpr pointer get() const noexcept { return buf; }
+        constexpr explicit operator bool() const noexcept { return (bool)buf; }
 
-        constexpr add_lvalue_reference_t<T> operator*() const noexcept(noexcept(*std::declval<pointer>()))
-        {
-            return *buf;
-        }
-        constexpr pointer operator->() const noexcept
-        {
-            return *buf;
-        }
-        constexpr add_lvalue_reference_t<T> operator[](size_t i) const
-        {
-            return buf[i];
-        }
+        constexpr add_lvalue_reference_t<T> operator*() const noexcept(noexcept(*std::declval<pointer>())) { return *buf; }
+        constexpr pointer operator->() const noexcept { return *buf; }
+        constexpr add_lvalue_reference_t<T> operator[](size_t i) const { return buf[i]; }
     };
 
     namespace detail

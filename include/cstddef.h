@@ -7,6 +7,11 @@ namespace std
     using ptrdiff_t = decltype(((char*)1) - ((char*)0));
     using nullptr_t = decltype(nullptr);
 
+#ifdef __x86_64__
+    using word_t = int;
+    static_assert(sizeof(word_t) == 4, "Sizeof word should be 4");
+#endif
+
     namespace detail
     {
         template <typename T, typename... Ts>

@@ -19,22 +19,10 @@ namespace std
         {
         }
 
-        constexpr size_t line() const noexcept
-        {
-            return l;
-        }
-        constexpr size_t column() const noexcept
-        {
-            return c;
-        }
-        constexpr const char* file_name() const noexcept
-        {
-            return filename;
-        }
-        constexpr const char* function_name() const noexcept
-        {
-            return funcname;
-        }
+        constexpr size_t line() const noexcept { return l; }
+        constexpr size_t column() const noexcept { return c; }
+        constexpr const char* file_name() const noexcept { return filename; }
+        constexpr const char* function_name() const noexcept { return funcname; }
 
     private:
         size_t l;
