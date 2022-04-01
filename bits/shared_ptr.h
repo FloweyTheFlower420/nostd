@@ -2,21 +2,17 @@
 #define __NOSTDLIB_BITS_SHARED_PTR_H__
 #include <utility.h>
 
-namespace std
-{
-    template <typename T>
-    class shared_ptr
-    {
-        struct data
-        {
-            size_t strong_ref = 0;
-            size_t weak_ref = 0;
-            void* data;
-            void (*deleter)(void*);
-        };
+namespace std {
+template <typename T> class shared_ptr {
+  struct data {
+    size_t strong_ref = 0;
+    size_t weak_ref = 0;
+    void *data;
+    void (*deleter)(void *);
+  };
 
-    public:
-    };
+public:
+};
 } // namespace std
 
 #endif

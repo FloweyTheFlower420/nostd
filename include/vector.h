@@ -7,150 +7,144 @@
 #include <new.h>
 #include <utility.h>
 
-namespace std
-{
-    template <typename T>
-    class vector
-    {
-        T* buffer;
-        size_t s;
-        size_t cap;
+namespace std {
+template <typename T> class vector {
+  T *buffer;
+  size_t s;
+  size_t cap;
 
-        inline constexpr static size_t get_realloc_size(size_t n) { return n << 1; }
+  inline constexpr static size_t get_realloc_size(size_t n) { return n << 1; }
 
-    public:
-        using value_type = T;
-        using size_type = size_t;
-        using difference_type = ptrdiff_t;
-        using reference = T&;
-        using const_reference = const T&;
-        using pointer = T*;
-        using const_pointer = const T*;
-        using iterator = detail::iterator_wrapper<pointer, vector>;
-        using const_iterator = detail::iterator_wrapper<const_pointer, vector>;
-        using reverse_iterator = std::reverse_iterator<iterator>;
-        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+public:
+  using value_type = T;
+  using size_type = size_t;
+  using difference_type = ptrdiff_t;
+  using reference = T &;
+  using const_reference = const T &;
+  using pointer = T *;
+  using const_pointer = const T *;
+  using iterator = detail::iterator_wrapper<pointer, vector>;
+  using const_iterator = detail::iterator_wrapper<const_pointer, vector>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        constexpr vector() : buffer(nullptr), s(0), cap(0) {}
-        constexpr vector(size_type count, const T& value) : buffer(new T[count]{value}), s(count), cap(count) {}
-        explicit constexpr vector(size_type count) : buffer(new T[count]), s(count), cap(count) {}
+  constexpr vector() : buffer(nullptr), s(0), cap(0) {}
+  constexpr vector(size_type count, const T &value)
+      : buffer(new T[count]{value}), s(count), cap(count) {}
+  explicit constexpr vector(size_type count)
+      : buffer(new T[count]), s(count), cap(count) {}
 
-        template <typename It>
-        vector(It first, It last)
-        {
-            while (first != last)
-                push_back(*first++);
-        }
+  template <typename It> vector(It first, It last) {
+    while (first != last)
+      push_back(*first++);
+  }
 
-        vector(const vector& other)
-        {
-            s = other.size;
-            cap = other.cap;
-            buffer = new T[cap];
-            for (size_t i = 0; i < s; i++)
-                buffer[i] = other[i];
-        }
+  vector(const vector &other) {
+    s = other.size;
+    cap = other.cap;
+    buffer = new T[cap];
+    for (size_t i = 0; i < s; i++)
+      buffer[i] = other[i];
+  }
 
-        constexpr vector(vector&& other) noexcept : buffer(other.buffer), s(other.size), cap(other.cap) {}
+  constexpr vector(vector &&other) noexcept
+      : buffer(other.buffer), s(other.size), cap(other.cap) {}
 
-        constexpr vector(initializer_list<T> init)
-        {
-            s = cap = init.size();
-            buffer = new T[s];
-            size_type idx = 0;
-            for (const auto& i : init)
-                buffer[idx++] = i;
-        }
+  constexpr vector(initializer_list<T> init) {
+    s = cap = init.size();
+    buffer = new T[s];
+    size_type idx = 0;
+    for (const auto &i : init)
+      buffer[idx++] = i;
+  }
 
-        ~vector()
-        {
-            delete[] buffer;
-            buffer = nullptr;
-        }
+  ~vector() {
+    delete[] buffer;
+    buffer = nullptr;
+  }
 
-        constexpr vector& operator=(const vector& other)
-        {
-            delete[] buffer;
+  constexpr vector &operator=(const vector &other) {
+    delete[] buffer;
 
-            s = other.size;
-            cap = other.cap;
-            buffer = new T[cap];
-            for (size_t i = 0; i < s; i++)
-                buffer[i] = other[i];
-        }
+    s = other.size;
+    cap = other.cap;
+    buffer = new T[cap];
+    for (size_t i = 0; i < s; i++)
+      buffer[i] = other[i];
+  }
 
-        constexpr vector& operator=(vector&& other)
-        {
-            delete[] buffer;
+  constexpr vector &operator=(vector &&other) {
+    delete[] buffer;
 
-            s = other.size;
-            cap = other.cap;
-            buffer = other.buffer;
-        }
-        constexpr vector& operator=(initializer_list<T> init)
-        {
-            delete[] buffer;
+    s = other.size;
+    cap = other.cap;
+    buffer = other.buffer;
+  }
+  constexpr vector &operator=(initializer_list<T> init) {
+    delete[] buffer;
 
-            s = cap = init.size();
-            buffer = new T[s];
-            size_type idx = 0;
-            for (const auto& i : init)
-                buffer[idx++] = i;
-        }
+    s = cap = init.size();
+    buffer = new T[s];
+    size_type idx = 0;
+    for (const auto &i : init)
+      buffer[idx++] = i;
+  }
 
-        iterator begin() { return iterator(buffer); }
-        iterator end() { return iterator(buffer + s); }
+  iterator begin() { return iterator(buffer); }
+  iterator end() { return iterator(buffer + s); }
 
-        const_iterator cbegin() const { return const_iterator(buffer); }
-        const_iterator cend() const { return const_iterator(buffer + s); }
+  const_iterator cbegin() const { return const_iterator(buffer); }
+  const_iterator cend() const { return const_iterator(buffer + s); }
 
         reverse)ut rbegin() { return reverse_iterator<iterator>(end()); }
-        reverse_iterator<iterator> rend() { return reverse_iterator<iterator>(begin()); }
-
-        reverse_iterator<iterator> crbegin() const { return reverse_iterator<const_iterator>(cend()); }
-        reverse_iterator<iterator> crend() const { return reverse_iterator<const_iterator>(cbegin()); }
-
-        void assign(size_type count, const T& value)
-        {
-            clear();
-            resize(count);
-            for (size_type i = 0; i < count; i++)
-                buffer[i] = value;
+        reverse_iterator<iterator> rend() {
+          return reverse_iterator<iterator>(begin());
         }
 
-        template <typename InputIt>
-        void assign(InputIt first, InputIt last)
-        {
-            clear();
-            while (first != last)
-                push_back(*first++);
+        reverse_iterator<iterator> crbegin() const {
+          return reverse_iterator<const_iterator>(cend());
+        }
+        reverse_iterator<iterator> crend() const {
+          return reverse_iterator<const_iterator>(cbegin());
         }
 
-        void assign(initializer_list<T> init)
-        {
-            clear();
-            resize(init.size());
-            size_t idx = 0;
-            for (auto& i : init)
-                buffer[idx] = i;
+        void assign(size_type count, const T &value) {
+          clear();
+          resize(count);
+          for (size_type i = 0; i < count; i++)
+            buffer[i] = value;
         }
 
-        reference at(size_type pos)
-        {
-            if (pos >= s)
-                __handle_out_of_range();
-            return buffer[pos];
+        template <typename InputIt> void assign(InputIt first, InputIt last) {
+          clear();
+          while (first != last)
+            push_back(*first++);
         }
 
-        const_reference at(size_type pos) const
-        {
-            if (pos >= s)
-                __handle_out_of_range();
-            return buffer[pos];
+        void assign(initializer_list<T> init) {
+          clear();
+          resize(init.size());
+          size_t idx = 0;
+          for (auto &i : init)
+            buffer[idx] = i;
+        }
+
+        reference at(size_type pos) {
+          if (pos >= s)
+            __handle_out_of_range();
+          return buffer[pos];
+        }
+
+        const_reference at(size_type pos) const {
+          if (pos >= s)
+            __handle_out_of_range();
+          return buffer[pos];
         }
 
         constexpr reference operator[](size_type pos) { return buffer[pos]; }
-        constexpr const_reference operator[](size_type pos) const { return buffer[pos]; }
+        constexpr const_reference operator[](size_type pos) const {
+          return buffer[pos];
+        }
 
         constexpr reference front() { return *this[0]; }
         constexpr const_reference front() const { return *this[0]; }
@@ -163,231 +157,206 @@ namespace std
         [[nodiscard]] constexpr bool empty() const noexcept { return s == 0; }
         constexpr size_type size() const noexcept { return size; }
         constexpr size_type max_size() const noexcept { return -1ULL; }
-        constexpr void reserve(size_type new_cap)
-        {
-            if (new_cap <= cap)
-                return;
-            auto old = buffer;
-            buffer = new T[new_cap];
-            for (size_type i = 0; i < s; i++)
-                buffer[i] = move(old[i]);
-            delete old;
+        constexpr void reserve(size_type new_cap) {
+          if (new_cap <= cap)
+            return;
+          auto old = buffer;
+          buffer = new T[new_cap];
+          for (size_type i = 0; i < s; i++)
+            buffer[i] = move(old[i]);
+          delete old;
         }
 
         constexpr size_type capacity() const noexcept { return cap; }
 
-        constexpr void shrink_to_fit()
-        {
-            if (s == cap)
-                return;
+        constexpr void shrink_to_fit() {
+          if (s == cap)
+            return;
 
-            cap = s;
-            auto old = buffer;
-            buffer = new T[cap];
-            for (size_type i = 0; i < s; i++)
-                buffer[i] = move(old[i]);
+          cap = s;
+          auto old = buffer;
+          buffer = new T[cap];
+          for (size_type i = 0; i < s; i++)
+            buffer[i] = move(old[i]);
 
-            delete old;
+          delete old;
         }
 
         constexpr void clear() noexcept { s = 0; }
 
-        iterator insert(const_iterator pos, const T& value)
-        {
-            size_t index = pos - begin();
-            if (s + 1 > cap)
-            {
-                auto old = buffer;
-                cap = get_realloc_size(cap);
+        iterator insert(const_iterator pos, const T &value) {
+          size_t index = pos - begin();
+          if (s + 1 > cap) {
+            auto old = buffer;
+            cap = get_realloc_size(cap);
 
-                for (size_t i = 0; i < index; i++)
-                    buffer[i] = move(old[i]);
+            for (size_t i = 0; i < index; i++)
+              buffer[i] = move(old[i]);
 
-                for (size_t i = index; i < s; i++)
-                    buffer[i + 1] = move(old[i]);
-
-                s++;
-            }
-            else
-            {
-                for (size_t i = s - 1; i >= index; i--)
-                    buffer[i + 1] = move(buffer[i]);
-            }
+            for (size_t i = index; i < s; i++)
+              buffer[i + 1] = move(old[i]);
 
             s++;
-            buffer[index] = value;
-            return begin() + index;
+          } else {
+            for (size_t i = s - 1; i >= index; i--)
+              buffer[i + 1] = move(buffer[i]);
+          }
+
+          s++;
+          buffer[index] = value;
+          return begin() + index;
         }
 
-        constexpr iterator insert(const_iterator pos, T&& value)
-        {
-            size_t index = pos - begin();
-            if (s + 1 > cap)
-            {
-                auto old = buffer;
-                cap = get_realloc_size(cap);
+        constexpr iterator insert(const_iterator pos, T &&value) {
+          size_t index = pos - begin();
+          if (s + 1 > cap) {
+            auto old = buffer;
+            cap = get_realloc_size(cap);
 
-                for (size_t i = 0; i < index; i++)
-                    buffer[i] = move(old[i]);
+            for (size_t i = 0; i < index; i++)
+              buffer[i] = move(old[i]);
 
-                for (size_t i = index; i < s; i++)
-                    buffer[i + 1] = move(old[i]);
-
-                s++;
-            }
-            else
-            {
-                for (size_t i = s - 1; i >= index; i--)
-                    buffer[i + 1] = move(buffer[i]);
-            }
+            for (size_t i = index; i < s; i++)
+              buffer[i + 1] = move(old[i]);
 
             s++;
-            buffer[index] = move(value);
-            return begin() + index;
+          } else {
+            for (size_t i = s - 1; i >= index; i--)
+              buffer[i + 1] = move(buffer[i]);
+          }
+
+          s++;
+          buffer[index] = move(value);
+          return begin() + index;
         }
 
-        constexpr iterator insert(const_iterator pos, size_type count, const T& value)
-        {
-            size_t index = pos - begin();
-            if (s + count > cap)
-            {
-                auto old = buffer;
-                cap = get_realloc_size(cap);
+        constexpr iterator insert(const_iterator pos, size_type count,
+                                  const T &value) {
+          size_t index = pos - begin();
+          if (s + count > cap) {
+            auto old = buffer;
+            cap = get_realloc_size(cap);
 
-                for (size_t i = 0; i < index; i++)
-                    buffer[i] = move(old[i]);
+            for (size_t i = 0; i < index; i++)
+              buffer[i] = move(old[i]);
 
-                for (size_t i = index; i < s; i++)
-                    buffer[i + count] = move(old[i]);
+            for (size_t i = index; i < s; i++)
+              buffer[i + count] = move(old[i]);
 
-                s++;
-            }
-            else
-            {
-                for (size_t i = s - 1; i >= index; i--)
-                    buffer[i + count] = move(buffer[i]);
-            }
+            s++;
+          } else {
+            for (size_t i = s - 1; i >= index; i--)
+              buffer[i + count] = move(buffer[i]);
+          }
 
-            s += count;
-            for (size_t i = index; i < index + count; i++)
-                buffer[i] = value;
-            return begin() + index;
+          s += count;
+          for (size_t i = index; i < index + count; i++)
+            buffer[i] = value;
+          return begin() + index;
         }
 
         template <typename It>
-        constexpr iterator insert(const_iterator pos, It first, It last)
-        {
-            auto count = distance(first, last);
+        constexpr iterator insert(const_iterator pos, It first, It last) {
+          auto count = distance(first, last);
 
-            size_t index = pos - begin();
-            if (s + count > cap)
-            {
-                auto old = buffer;
-                cap = get_realloc_size(cap);
+          size_t index = pos - begin();
+          if (s + count > cap) {
+            auto old = buffer;
+            cap = get_realloc_size(cap);
 
-                for (size_t i = 0; i < index; i++)
-                    buffer[i] = move(old[i]);
+            for (size_t i = 0; i < index; i++)
+              buffer[i] = move(old[i]);
 
-                for (size_t i = index; i < s; i++)
-                    buffer[i + count] = move(old[i]);
-
-                s++;
-            }
-            else
-            {
-                for (size_t i = s - 1; i >= index; i--)
-                    buffer[i + count] = move(buffer[i]);
-            }
-
-            s += count;
-            for (size_t i = index; i < index + count; i++)
-                buffer[i] = *first++;
-            ;
-            return begin() + index;
-        }
-
-        constexpr iterator insert(const_iterator pos, initializer_list<T> ilist) { insert(pos, ilist.begin(), ilist.end()); }
-
-        template <typename... Args>
-        constexpr iterator emplace(const_iterator pos, Args&&... args)
-        {
-            size_t index = pos - begin();
-            if (s + 1 > cap)
-            {
-                auto old = buffer;
-                cap = get_realloc_size(cap);
-
-                for (size_t i = 0; i < index; i++)
-                    buffer[i] = move(old[i]);
-
-                for (size_t i = index; i < s; i++)
-                    buffer[i + 1] = move(old[i]);
-
-                s++;
-            }
-            else
-            {
-                for (size_t i = s - 1; i >= index; i--)
-                    buffer[i + 1] = move(buffer[i]);
-            }
+            for (size_t i = index; i < s; i++)
+              buffer[i + count] = move(old[i]);
 
             s++;
-            buffer[index] = T(forward(args)...);
-            return begin() + index;
-        }
-
-        constexpr iterator erase(const_iterator pos)
-        {
-            size_t index = pos - begin();
+          } else {
             for (size_t i = s - 1; i >= index; i--)
-                buffer[i - 1] = move(buffer[i]);
+              buffer[i + count] = move(buffer[i]);
+          }
 
-            ~buffer[s - 1];
-            s--;
-            return iterator(buffer + index);
+          s += count;
+          for (size_t i = index; i < index + count; i++)
+            buffer[i] = *first++;
+          ;
+          return begin() + index;
         }
 
-        constexpr iterator erase(const_iterator first, const_iterator last)
-        {
-            auto dist = distance(first, last);
-            size_t index = first - begin();
+        constexpr iterator insert(const_iterator pos,
+                                  initializer_list<T> ilist) {
+          insert(pos, ilist.begin(), ilist.end());
+        }
+
+        template <typename... Args>
+        constexpr iterator emplace(const_iterator pos, Args &&...args) {
+          size_t index = pos - begin();
+          if (s + 1 > cap) {
+            auto old = buffer;
+            cap = get_realloc_size(cap);
+
+            for (size_t i = 0; i < index; i++)
+              buffer[i] = move(old[i]);
+
+            for (size_t i = index; i < s; i++)
+              buffer[i + 1] = move(old[i]);
+
+            s++;
+          } else {
             for (size_t i = s - 1; i >= index; i--)
-                buffer[i - dist] = move(buffer[i]);
+              buffer[i + 1] = move(buffer[i]);
+          }
 
-            ~buffer[s - 1];
-
-            return iterator(buffer + index);
+          s++;
+          buffer[index] = T(forward(args)...);
+          return begin() + index;
         }
 
-        constexpr void push_back(const T& value)
-        {
-            if (s == cap)
-            {
-                // TODO: implement
-            }
+        constexpr iterator erase(const_iterator pos) {
+          size_t index = pos - begin();
+          for (size_t i = s - 1; i >= index; i--)
+            buffer[i - 1] = move(buffer[i]);
+
+          ~buffer[s - 1];
+          s--;
+          return iterator(buffer + index);
         }
 
-        constexpr void resize(size_type count)
-        {
-            if (count < s)
-            {
-                for (size_t i = count; i < s; i++)
-                    ~buffer[i];
+        constexpr iterator erase(const_iterator first, const_iterator last) {
+          auto dist = distance(first, last);
+          size_t index = first - begin();
+          for (size_t i = s - 1; i >= index; i--)
+            buffer[i - dist] = move(buffer[i]);
 
-                s = count;
-                return;
-            }
+          ~buffer[s - 1];
 
-            if (count > cap)
-                reserve(get_realloc_size(s));
-            s = count;
+          return iterator(buffer + index);
         }
 
-        constexpr void resize(size_type count, const value_type& value)
-        {
+        constexpr void push_back(const T &value) {
+          if (s == cap) {
             // TODO: implement
+          }
         }
-    };
+
+        constexpr void resize(size_type count) {
+          if (count < s) {
+            for (size_t i = count; i < s; i++)
+              ~buffer[i];
+
+            s = count;
+            return;
+          }
+
+          if (count > cap)
+            reserve(get_realloc_size(s));
+          s = count;
+        }
+
+        constexpr void resize(size_type count, const value_type &value) {
+          // TODO: implement
+        }
+};
 } // namespace std
 
 #endif
