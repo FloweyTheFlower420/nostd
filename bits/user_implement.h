@@ -4,8 +4,8 @@
 namespace std::detail
 {
     void* malloc(size_t size);
-    void* aligned_malloc(size_t size, max_align_t align);
-    void free();
+    void* aligned_malloc(size_t size, size_t align);
+    void free(void*);
     void putc(char ch);
 
     namespace errors
