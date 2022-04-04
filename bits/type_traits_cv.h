@@ -1,7 +1,7 @@
 #ifndef __NOSTDLIB_BITS_TYPE_TRAITS_CV_H__
 #define __NOSTDLIB_BITS_TYPE_TRAITS_CV_H__
 #include "type_traits_utils.h"
-#include <cstddef.h>
+#include <cstddef>
 
 namespace std
 {

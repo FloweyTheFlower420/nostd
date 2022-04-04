@@ -1,7 +1,7 @@
 #ifndef __NOSTDLIB_BITS_ITERATOR_SIMPLE_TYPES_H__
 #define __NOSTDLIB_BITS_ITERATOR_SIMPLE_TYPES_H__
 
-#include <type_traits.h>
+#include <type_traits>
 namespace std
 {
     struct input_iterator_tag

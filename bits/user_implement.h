@@ -1,6 +1,6 @@
 #ifndef __NOSTDLIB_USER_IMPLEMENT_H__
 #define __NOSTDLIB_USER_IMPLEMENT_H__
-#include <cstddef.h>
+#include <cstddef>
 namespace std::detail
 {
     void* malloc(size_t size);

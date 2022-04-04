@@ -1,11 +1,11 @@
 #ifndef __NOSTDLIB_VECTOR_H__
 #define __NOSTDLIB_VECTOR_H__
 #include "../bits/iterator_utils.h"
-#include <cstddef.h>
-#include <initializer_list.h>
-#include <iterator.h>
-#include <new.h>
-#include <utility.h>
+#include <cstddef>
+#include <initializer_list>
+#include <iterator>
+#include <new>
+#include <utility>
 
 namespace std
 {

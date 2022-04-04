@@ -1,7 +1,7 @@
 #ifndef __NOSTDLIB_BACK_INSERT_IERATOR_H__
 #define __NOSTDLIB_BACK_INSERT_IERATOR_H__
 #include "iterator_simple_types.h"
-#include <memory.h>
+#include <memory>
 
 namespace std
 {

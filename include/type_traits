@@ -7,7 +7,7 @@
 #include "../bits/type_traits_supported_operations.h"
 #include "../bits/type_traits_utils.h"
 
-#include <cstddef.h>
+#include <cstddef>
 
 #include "utility.h"
 

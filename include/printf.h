@@ -2,12 +2,12 @@
 #define __NOSTDLIB_PRINTF_H__
 
 #include "../bits/user_implement.h"
-#include <cctype.h>
-#include <cstddef.h>
-#include <cstdint.h>
-#include <cstring.h>
-#include <initializer_list.h>
-#include <variant.h>
+#include <cctype>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <initializer_list>
+#include <variant>
 
 namespace std
 {

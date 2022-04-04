@@ -1,10 +1,11 @@
+// vim: set ft=cpp:
 #ifndef __NOSTDLIB_ARRAY_H__
 #define __NOSTDLIB_ARRAY_H__
 #include "../bits/iterator_utils.h"
 #include "../bits/reverse_iterator.h"
 #include "../bits/user_implement.h"
-#include <cstddef.h>
-#include <type_traits.h>
+#include <cstddef>
+#include <type_traits>
 
 namespace std
 {

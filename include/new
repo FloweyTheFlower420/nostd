@@ -1,6 +1,6 @@
 #ifndef __NOSTDLIB_NEW_H__
 #define __NOSTDLIB_NEW_H__
-#include <cstddef.h>
+#include <cstddef>
 
 namespace std
 {

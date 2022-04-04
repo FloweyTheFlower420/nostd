@@ -1,7 +1,7 @@
 #ifndef BITS_ITERATOR_UTILS_H
 #define BITS_ITERATOR_UTILS_H
 #include "iterator_simple_types.h"
-#include <type_traits.h>
+#include <type_traits>
 
 namespace std
 {

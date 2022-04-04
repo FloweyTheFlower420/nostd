@@ -1,8 +1,8 @@
 #ifndef __NOSTDLIB_BITS_UNIQUE_PTR_H__
 #define __NOSTDLIB_BITS_UNIQUE_PTR_H__
-#include <cstddef.h>
-#include <type_traits.h>
-#include <utility.h>
+#include <cstddef>
+#include <type_traits>
+#include <utility>
 
 namespace std
 {

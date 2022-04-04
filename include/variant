@@ -3,11 +3,11 @@
 
 #include "../bits/user_implement.h"
 #include "../bits/utils.h"
-#include <cstddef.h>
-#include <initializer_list.h>
-#include <new.h>
-#include <type_traits.h>
-#include <utility.h>
+#include <cstddef>
+#include <initializer_list>
+#include <new>
+#include <type_traits>
+#include <utility>
 
 namespace std
 {
