@@ -1,14 +1,12 @@
-#ifndef __NOSTDLIB_BACKTRACE_H__
-#define __NOSTDLIB_BACKTRACE_H__
-#include <cstddef>
+#include <backtrace.h>
 
 namespace std
 {
     size_t backtrace(size_t skip, size_t count, void** buf, size_t* base_ptr = nullptr)
     {
         __asm__ __volatile__("movq %%rbp, %0" : "=g"(base_ptr) : : "memory" );
-
-        while(true) 
+        size_t n = 0;
+        while(true)
         {
             size_t old_bp = base_ptr[0];
             size_t ret_addr = base_ptr[1];
@@ -19,16 +17,17 @@ namespace std
                 skip--;
             else if(count != 0)
             {
+                n++;
                 *buf++ = (void*)ret_addr;
                 count--;
             }
-            
+
             if (!old_bp)
                 break;
 
             base_ptr = (size_t*) old_bp;
         }
-    }
-};
 
-#endif
+        return n;
+    }
+}
