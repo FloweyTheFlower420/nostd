@@ -1,4 +1,4 @@
-// vim:foldmethod=marker
+// vim:foldmethod=marker ft=cpp
 #ifndef __NOTSTDLIB_TYPE_TRAITS_H__
 #define __NOTSTDLIB_TYPE_TRAITS_H__
 #include "../bits/type_traits_cv.h"
@@ -6,10 +6,8 @@
 #include "../bits/type_traits_simple_catagories.h"
 #include "../bits/type_traits_supported_operations.h"
 #include "../bits/type_traits_utils.h"
-
 #include <cstddef>
-
-#include "utility.h"
+#include <utility>
 
 namespace std
 {
