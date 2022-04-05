@@ -11,6 +11,8 @@
 #include <memory_region>
 #include <new>
 #include <printf.h>
+#include <backtrace.h>
+#include <panic.h>
 #include <source_location>
 #include <type_traits>
 #include <utility>

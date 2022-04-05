@@ -15,6 +15,7 @@ namespace std::detail
         [[noreturn]] void __stdexcept_bad_variant_access();
         [[noreturn]] void __printf_argument_notfound();
         [[noreturn]] void __printf_undefined_specifier_for_length();
+        [[noreturn]] void __halt();
     } // namespace errors
 } // namespace std::detail
 #endif
