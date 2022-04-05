@@ -1,7 +1,7 @@
 #include "../bits/user_implement.h"
 #include "../bits/utils.h"
-#include <cstring.h>
-#include <new.h>
+#include <cstring>
+#include <new>
 
 namespace std
 {
