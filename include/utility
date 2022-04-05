@@ -1,3 +1,4 @@
+// vim: ft=cpp
 #ifndef __NOSTDLIB_UTILITY_H__
 #define __NOSTDLIB_UTILITY_H__
 
@@ -16,7 +17,7 @@ namespace std
         };
 #else
         template <size_t N, typename... Ts>
-        requires(N < sizeof...(Ts)) struct type_pack_element;
+        struct type_pack_element;
 
         template <size_t N, typename T, typename... Ts>
         struct type_pack_element<N, T, Ts...> : type_pack_element<N - 1, Ts...>
@@ -36,11 +37,11 @@ namespace std
     {
     }
 
-    template <typename T>
-    void swap(T& a, T& b) noexcept(/* see below */);
+    //template <typename T>
+    //void swap(T& a, T& b) noexcept(false);
 
-    template <typename T2, size_t N>
-    void swap(T2 (&a)[N], T2 (&b)[N]) noexcept(/* see below */);
+    //template <typename T2, size_t N>
+    //void swap(T2 (&a)[N], T2 (&b)[N]) noexcept(/* see below */);
 
     template <typename T>
     constexpr T&& forward(remove_reference_t<T>& t) noexcept
