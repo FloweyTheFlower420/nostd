@@ -70,7 +70,7 @@ namespace std
     };
 
     template <size_t I, typename T>
-    using variant_alternative_t = variant_alternative<I, T>;
+    using variant_alternative_t = typename variant_alternative<I, T>::type;
 
     template <typename... Ts>
     class variant

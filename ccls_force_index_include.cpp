@@ -8,10 +8,10 @@
 #include <iterator>
 #include <memory>
 //#include <memory_region.h>
-#include <new>
-#include <printf.h>
 #include <backtrace.h>
+#include <new>
 #include <panic.h>
+#include <printf.h>
 #include <source_location>
 #include <type_traits>
 #include <utility>

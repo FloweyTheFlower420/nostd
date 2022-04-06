@@ -7,35 +7,35 @@
 namespace std
 {
     template <typename T, typename... Args>
-#if(__has_builtin(__is_constructible))
+#if (__has_builtin(__is_constructible))
     using is_constructible = bool_constant<__is_constructible(T, Args...)>;
 #else
     static_assert(false, "compiler does not have builtins required for is_constructible");
 #endif
 
     template <typename T, typename... Args>
-#if(__has_builtin(__is_trivially_constructible))
-    using is_trivially_constructible = bool_constant<is_constructible<T, Args...>::value && 
-        __is_trivially_constructible(T, Args...)>;
+#if (__has_builtin(__is_trivially_constructible))
+    using is_trivially_constructible =
+        bool_constant<is_constructible<T, Args...>::value&& __is_trivially_constructible(T, Args...)>;
 #else
     static_assert(false, "compiler does not have builtins required for is_trivially_constructible");
 #endif
 
     namespace detail
     {
-        template<typename T, typename... Args>
+        template <typename T, typename... Args>
         bool is_nothrow_constructible_helper()
         {
-            if constexpr(is_constructible<T, Args...>::value)
+            if constexpr (is_constructible<T, Args...>::value)
                 return nowthrow(T(declval<Args>()...));
             else
                 return false;
         }
-    }
+    } // namespace detail
 
     template <typename T, typename... Args>
     using is_nothrow_constructible = bool_constant<detail::is_nothrow_constructible_helper<T, Args...>()>;
-    
+
     template <typename T, typename... Args>
     inline constexpr bool is_constructible_v = is_constructible<T, Args...>::value;
     template <typename T, typename... Args>
@@ -94,30 +94,30 @@ namespace std
     inline constexpr bool is_nothrow_move_constructible_v = is_nothrow_move_constructible<T>::value;
 
     template <typename T, typename U>
-#if(__has_builtin(__is_assignable))
+#if (__has_builtin(__is_assignable))
     using is_assignable = bool_constant<__is_assignable(T, U)>;
 #else
     static_assert(false, "compiler does not have builtins required for is_assignable");
 #endif
 
     template <typename T, typename U>
-#if(__has_builtin(__is_trivially_assignable))
-    using is_trivially_assignable = bool_constant<is_assignable<T, U>::value && __is_trivially_assignable(T, U)>;
+#if (__has_builtin(__is_trivially_assignable))
+    using is_trivially_assignable = bool_constant<is_assignable<T, U>::value&& __is_trivially_assignable(T, U)>;
 #else
     static_assert(false, "compiler does not have builtins required for is_trivially_assignable");
 #endif
 
     namespace detail
     {
-        template<typename T, typename U>
+        template <typename T, typename U>
         bool is_nothrow_assignable_helper()
         {
-            if constexpr(is_assignable<T, U>::value)
+            if constexpr (is_assignable<T, U>::value)
                 return nowthrow(declval<T>() = declval<U>());
             else
                 return false;
         }
-    }
+    } // namespace detail
 
     template <typename T, typename U>
     using is_nothrow_assignable = bool_constant<detail::is_nothrow_assignable_helper<T, U>()>;
@@ -185,10 +185,10 @@ namespace std
     using is_destructible = typename detail::is_destructible_helper<T>::type;
 
     template <typename T>
-#if(__has_builtin(__is_trivially_destructible))
-    using is_trivially_destructible = bool_constant<is_destructible<T>::value && __is_trivially_destructible(T)>;
-#elif(__has_builtin(__has_trivial_destructor))
-    using is_trivially_destructible = bool_constant<is_destructible<T>::value && __has_trivial_destructor(T)>;
+#if (__has_builtin(__is_trivially_destructible))
+    using is_trivially_destructible = bool_constant<is_destructible<T>::value&& __is_trivially_destructible(T)>;
+#elif (__has_builtin(__has_trivial_destructor))
+    using is_trivially_destructible = bool_constant<is_destructible<T>::value&& __has_trivial_destructor(T)>;
 #else
     static_assert(false, "compiler does not have builtins required for is_trivially_destructible");
 #endif
@@ -204,7 +204,7 @@ namespace std
     inline constexpr bool is_nothrow_destructible_v = is_nothrow_move_assignable<T>::value;
 
     template <typename T>
-#if(__has_builtin(__has_trivial_destructor))
+#if (__has_builtin(__has_trivial_destructor))
     using has_virtual_destructor = bool_constant<__has_virtual_destructor(T)>;
 #else
     static_assert(false, "compiler does not have builtins required for has_virtual_destructor");

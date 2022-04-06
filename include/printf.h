@@ -146,7 +146,7 @@ namespace std
             width_len = cmd.width > width_len ? cmd.width - width_len : 0;
 
             if (cmd.flags & LEFT)
-                for (int i = 0; i < width_len; i++)
+                for (size_t i = 0; i < width_len; i++)
                     print(cmd.padchar);
 
             switch (*format)
@@ -172,7 +172,7 @@ namespace std
             }
 
             if (!(cmd.flags & LEFT))
-                for (int i = 0; i < width_len; i++)
+                for (size_t i = 0; i < width_len; i++)
                     print(cmd.padchar);
         }
 
@@ -449,13 +449,13 @@ namespace std
     template <typename... Args>
     int sprintf(char* buffer, const char* format, Args&&... args)
     {
-        printf_callback([&, buffer](char ch) mutable { *buffer++ = ch; }, format, args...);
+        return printf_callback([&, buffer](char ch) mutable { *buffer++ = ch; }, format, args...);
     }
 
     template <typename... Args>
     int snprintf(char* buffer, size_t count, const char* format, Args&&... args)
     {
-        printf_callback(
+        return printf_callback(
             [&, buffer](char ch) mutable {
                 if (count)
                 {
