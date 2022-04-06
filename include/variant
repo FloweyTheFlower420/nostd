@@ -66,7 +66,7 @@ namespace std
     template <size_t I, class... Ts>
     struct variant_alternative<I, variant<Ts...>>
     {
-        using type = detail::type_pack_element<I, Ts...>;
+        using type = typename detail::type_pack_element<I, Ts...>::type;
     };
 
     template <size_t I, typename T>
