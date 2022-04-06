@@ -188,7 +188,7 @@ namespace std
 #if(__has_builtin(__is_trivially_destructible))
     using is_trivially_destructible = bool_constant<is_destructible<T>::value && __is_trivially_destructible(T)>;
 #elif(__has_builtin(__has_trivial_destructor))
-    using is_trivially_destructible = bool_constant<is_destructible<T>::value && _has_trivial_destructor(T)>;
+    using is_trivially_destructible = bool_constant<is_destructible<T>::value && __has_trivial_destructor(T)>;
 #else
     static_assert(false, "compiler does not have builtins required for is_trivially_destructible");
 #endif
