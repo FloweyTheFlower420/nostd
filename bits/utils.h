@@ -34,20 +34,6 @@ namespace std
         {
             return (a + b - 1) / b;
         }
-
-        template <typename T, T v, T... rest>
-        class max_comptime
-        {
-            static constexpr T __impl()
-            {
-                if constexpr (sizeof...(rest) == 0)
-                    return v;
-                return max(v, max_comptime<T, rest...>::value);
-            }
-
-        public:
-            inline static constexpr T value = __impl();
-        };
     } // namespace detail
 } // namespace std
 

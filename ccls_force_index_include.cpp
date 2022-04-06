@@ -1,5 +1,4 @@
 #include <array>
-#include <bitset>
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
@@ -8,7 +7,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <memory>
-#include <memory_region>
+//#include <memory_region.h>
 #include <new>
 #include <printf.h>
 #include <backtrace.h>
@@ -18,3 +17,5 @@
 #include <utility>
 #include <variant>
 #include <vector>
+
+static_assert(std::is_trivially_destructible<char>::value);

@@ -1,25 +1,25 @@
 #ifndef __NOSTDLIB_PRINTF_H__
 #define __NOSTDLIB_PRINTF_H__
 
-#include "../bits/user_implement.h"
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
 #include <variant>
+#include "../bits/user_implement.h"
 
 namespace std
 {
 
     namespace detail::printf
     {
-
         using printf_argument_wrapper =
             variant<signed char, short, int, long, long long, unsigned char, unsigned short, unsigned int, unsigned long,
                     unsigned long long, intmax_t, uintmax_t, ptrdiff_t, size_t, const char*, void*, signed char*, short*,
                     int*, long*, long long*, intmax_t*, ptrdiff_t*, size_t*>;
         class fmtargs_wrapper
+
         {
             size_t index;
             size_t size;
@@ -34,21 +34,22 @@ namespace std
                 fmtargs = new printf_argument_wrapper[size];
                 initializer_list<printf_argument_wrapper> il{printf_argument_wrapper((remove_cv_t<decay_t<Args>>)args)...};
                 size_t i = 0;
-                for (auto e : il)
-                    fmtargs[i++] = e;
+                for (auto&& e : il)
+                    fmtargs[i++] = std::move(e);
             }
 
             printf_argument_wrapper& next()
             {
                 if (index == size)
-                    __handle_printf_argument_notfound();
+                    detail::errors::__printf_argument_notfound();
                 return fmtargs[index++];
             }
 
             printf_argument_wrapper& get()
+
             {
                 if (index == size)
-                    __handle_printf_argument_notfound();
+                    detail::errors::__printf_argument_notfound();
                 return fmtargs[index];
             }
 
@@ -238,7 +239,7 @@ namespace std
                 *get<ptrindex>(fmtargs.next()) = pc;
                 return;
             default:
-                detail::__printf_undefined_specifier_for_length();
+                detail::errors::__printf_undefined_specifier_for_length();
             }
 
             width_len = cmd.width > width_len ? cmd.width - width_len : 0;
@@ -399,7 +400,7 @@ namespace std
             if (*format == 'c' || *format == 's' || *format == 'p')
             {
                 if (len != NORMAL)
-                    detail::__printf_undefined_specifier_for_length();
+                    detail::errors::__printf_undefined_specifier_for_length();
                 handle_special(fmtargs, format, cmd, print);
                 format++;
                 continue;
@@ -442,7 +443,7 @@ namespace std
     template <typename... Args>
     int printf(const char* format, Args&&... args)
     {
-        return printf_callback(detail::putc, format, args...);
+    return printf_callback(detail::putc, format, args...);
     }
 
     template <typename... Args>

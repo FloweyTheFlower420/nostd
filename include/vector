@@ -1,6 +1,8 @@
+// vim: ft=cpp
 #ifndef __NOSTDLIB_VECTOR_H__
 #define __NOSTDLIB_VECTOR_H__
 #include "../bits/iterator_utils.h"
+#include "../bits/user_implement.h"
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -104,11 +106,11 @@ namespace std
         const_iterator cbegin() const { return const_iterator(buffer); }
         const_iterator cend() const { return const_iterator(buffer + s); }
 
-        reverse)ut rbegin() { return reverse_iterator<iterator>(end()); }
-        reverse_iterator<iterator> rend() { return reverse_iterator<iterator>(begin()); }
+        reverse_iterator rbegin() { return reverse_iterator(end()); }
+        reverse_iterator rend() { return reverse_iterator(begin()); }
 
-        reverse_iterator<iterator> crbegin() const { return reverse_iterator<const_iterator>(cend()); }
-        reverse_iterator<iterator> crend() const { return reverse_iterator<const_iterator>(cbegin()); }
+        const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+        const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
         void assign(size_type count, const T& value)
         {
@@ -138,14 +140,14 @@ namespace std
         reference at(size_type pos)
         {
             if (pos >= s)
-                __handle_out_of_range();
+                detail::errors::__stdexcept_out_of_range();
             return buffer[pos];
         }
 
         const_reference at(size_type pos) const
         {
             if (pos >= s)
-                __handle_out_of_range();
+                detail::errors::__stdexcept_out_of_range();
             return buffer[pos];
         }
 

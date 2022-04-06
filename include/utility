@@ -3,6 +3,7 @@
 #define __NOSTDLIB_UTILITY_H__
 
 #include "../bits/utils.h"
+#include "../bits/declval.h"
 #include <type_traits>
 
 namespace std
@@ -32,11 +33,6 @@ namespace std
 #endif
 
     } // namespace detail
-    template <typename T>
-    constexpr add_rvalue_reference_t<T> declval() noexcept
-    {
-    }
-
     //template <typename T>
     //void swap(T& a, T& b) noexcept(false);
 
@@ -69,6 +65,7 @@ namespace std
         obj = forward<U>(new_value);
         return old_value;
     }
+
     template <typename T>
     constexpr conditional_t<!is_nothrow_move_constructible<T>::value && is_copy_constructible<T>::value, const T&, T&&>
     move_if_noexcept(T& x) noexcept

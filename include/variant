@@ -1,3 +1,4 @@
+// vim: ft=cpp
 #ifndef __NOSTDLIB_VARIANT_H__
 #define __NOSTDLIB_VARIANT_H__
 
@@ -14,10 +15,21 @@ namespace std
     namespace detail
     {
         template <size_t index, bool b, bool... Bs>
-        struct first_index_true
+        class first_index_true
         {
-            static inline constexpr size_t value =
-                sizeof...(Bs) == 0 ? (b ? index : -1) : (b ? index : first_index_true<index + 1, Bs...>::value);
+            static constexpr size_t __impl()
+            {
+                if constexpr(sizeof...(Bs) == 0)
+                {
+                    return b ? index : -1;
+                }
+                else
+                {
+                    return b ? index : first_index_true<index + 1, Bs...>::value;
+                }
+            }
+        public:
+            static inline constexpr size_t value = __impl();
         };
 
         template <typename T, typename U>
@@ -70,8 +82,8 @@ namespace std
 
         using first_t = detail::type_pack_element<0, Ts...>;
 
-        inline constexpr static auto align = detail::max_comptime<size_t, alignof(Ts)...>::value;
-        inline constexpr static auto size = detail::max_comptime<size_t, sizeof(Ts)...>::value;
+        inline constexpr static auto align = detail::max(alignof(Ts)...);
+        inline constexpr static auto size = detail::max(sizeof(Ts)...);
 
         using deleter = void (*)(char*);
         using constructor = void (*)(const char*, char*);
@@ -98,24 +110,26 @@ namespace std
         inline static constexpr size_t npos = -1;
 
         constexpr variant() noexcept(noexcept(first_t())) : idx(0) { new (data) first_t(); }
-        constexpr variant(const variant& other) : idx(other.index) { copy_constructor[other.index](other.data, data); }
+        constexpr variant(const variant& other) : idx(other.idx) { copy_constructor[other.idx](other.data, data); }
+
+        template <typename T>
+        constexpr variant(T&& t)
+        {
+            static_assert(detail::first_index_true<0, is_constructible_v<Ts, T>...>::value != -1, "Cannot match type");
+            idx = detail::first_index_true<0, is_constructible_v<Ts, T>...>::value;
+            new (data) detail::type_pack_element<detail::first_index_true<0, is_constructible_v<Ts, T>...>::value, Ts...>(
+                forward(t));
+        }
 
         constexpr variant(variant&& other) noexcept((... && is_nothrow_move_constructible_v<Ts>)) : idx(other.index)
         {
             move_constructor[other.index](other.data, data);
         }
 
-        template <typename T>
-        constexpr variant(T&& t) noexcept(noexcept(T(forward(t))))
-        {
-            idx = detail::first_index_true<0, is_constructible_v<Ts, T>...>::value;
-            new (data) detail::type_pack_element<detail::first_index_true<0, is_constructible_v<Ts, T>...>::value, Ts...>(
-                forward(t));
-        }
-
         template <typename T, typename... Args>
         constexpr explicit variant(in_place_type_t<T>, Args&&... args)
         {
+            static_assert(detail::first_index_true<0, is_same_v<T, Ts>...>::value != -1, "Cannot match type");
             idx = detail::first_index_true<0, is_same_v<T, Ts>...>::value;
             new (data)
                 detail::type_pack_element<detail::first_index_true<0, is_same_v<T, Ts>...>::value, Ts...>(forward(args...));
@@ -124,6 +138,7 @@ namespace std
         template <typename T, typename U, typename... Args>
         constexpr explicit variant(in_place_type_t<T>, initializer_list<U> il, Args&&... args)
         {
+            static_assert( detail::first_index_true<0, is_same_v<T, Ts>...>::value != -1, "Cannot match type");
             idx = detail::first_index_true<0, is_same_v<T, Ts>...>::value;
             new (data) detail::type_pack_element<detail::first_index_true<0, is_same_v<T, Ts>...>::value, Ts...>(
                 il, forward(args...));
@@ -154,6 +169,19 @@ namespace std
             return *this;
         }
 
+
+        template <typename T>
+        constexpr variant& operator=(T&& t)
+        {
+            static_assert(detail::first_index_true<0, is_constructible_v<Ts, T>...>::value != -1, "Cannot match type");
+            safe_delete();
+            idx = npos;
+            new (data) detail::type_pack_element<detail::first_index_true<0, is_constructible_v<Ts, T>...>::value, Ts...>(
+                forward<T>(t));
+            idx = detail::first_index_true<0, is_constructible_v<Ts, T>...>::value;
+            return *this;
+        }
+
         constexpr variant& operator=(variant&& rhs) noexcept((... && is_nothrow_move_constructible_v<Ts>))
         {
             idx = npos;
@@ -164,17 +192,6 @@ namespace std
             return *this;
         }
 
-        template <typename T>
-        constexpr variant& operator=(T&& t) noexcept(noexcept(T(forward(t))))
-        {
-            safe_delete();
-            idx = npos;
-            new (data) detail::type_pack_element<detail::first_index_true<0, is_constructible_v<Ts, T>...>::value, Ts...>(
-                forward(t));
-            idx = detail::first_index_true<0, is_constructible_v<Ts, T>...>::value;
-            return *this;
-        }
-
         constexpr size_t index() const noexcept { return idx; }
 
         constexpr bool valueless_by_exception() const noexcept { return idx == -1; }
@@ -182,6 +199,7 @@ namespace std
         template <typename T, typename... Args>
         constexpr T& emplace(Args&&... args)
         {
+            static_assert(detail::first_index_true<0, is_same_v<Ts, T>...>::value != -1, "Cannot match type");
             safe_delete();
             idx = npos;
             new (data)
@@ -193,6 +211,7 @@ namespace std
         template <typename T, typename U, typename... Args>
         constexpr T& emplace(initializer_list<U> il, Args&&... args)
         {
+            static_assert(detail::first_index_true<0, is_same_v<Ts, T>...>::value != -1, "Cannot match type");
             safe_delete();
             idx = npos;
             new (data) detail::type_pack_element<detail::first_index_true<0, is_same_v<Ts, T>...>::value, Ts...>(
@@ -283,7 +302,7 @@ namespace std
     constexpr T& get(variant<Ts...>& v)
     {
         if (v.index() != detail::first_index_true<0, is_same_v<T, Ts>...>::value)
-            return detail::errors::__stdexcept_bad_variant_access();
+            detail::errors::__stdexcept_bad_variant_access();
         return *((T*)(v.data));
     }
 
@@ -291,7 +310,7 @@ namespace std
     constexpr T&& get(variant<Ts...>&& v)
     {
         if (v.index() != detail::first_index_true<0, is_same_v<T, Ts>...>::value)
-            return detail::errors::__stdexcept_bad_variant_access();
+            detail::errors::__stdexcept_bad_variant_access();
         return *((T*)(v.data));
     }
 
@@ -299,7 +318,7 @@ namespace std
     constexpr const T& get(const variant<Ts...>& v)
     {
         if (v.index() != detail::first_index_true<0, is_same_v<T, Ts>...>::value)
-            return detail::errors::__stdexcept_bad_variant_access();
+            detail::errors::__stdexcept_bad_variant_access();
         return *((T*)(v.data));
     }
 
@@ -307,7 +326,7 @@ namespace std
     constexpr const T&& get(const variant<Ts...>&& v)
     {
         if (v.index() != detail::first_index_true<0, is_same_v<T, Ts>...>::value)
-            return detail::errors::__stdexcept_bad_variant_access();
+            detail::errors::__stdexcept_bad_variant_access();
         return *((T*)(v.data));
     }
 
