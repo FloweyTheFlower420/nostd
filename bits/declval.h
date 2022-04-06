@@ -4,10 +4,10 @@
 
 namespace std
 {
-    template<typename T>
-    std::add_rvalue_reference_t<T> declval() noexcept 
+    template <typename T>
+    std::add_rvalue_reference_t<T> declval() noexcept
     {
     }
-}
+} // namespace std
 
 #endif

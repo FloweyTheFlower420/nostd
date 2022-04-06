@@ -27,7 +27,7 @@ namespace std
                 return false;
         }
     } // namespace detail
-    
+
     template <typename T>
     using is_swappable = detail::is_swappable_helper<T, T>;
     template <typename T, typename U>
@@ -45,6 +45,6 @@ namespace std
     inline constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;
     template <typename T, typename U>
     inline constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T, U>::value;
-}
+} // namespace std
 
 #endif

@@ -29,7 +29,6 @@ namespace std
         v &= ~(((1ULL << (uint64_t)(end - start + 1)) - 1) << start);
         v |= (((1ULL << (uint64_t)(end - start + 1)) - 1) << start) & to_set;
     }
-}
+} // namespace std
 
 #endif
-

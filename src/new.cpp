@@ -56,62 +56,26 @@ using namespace std;
     return detail::aligned_malloc(size, (size_t)align);
 }
 
-void operator delete(void* p) noexcept
-{
-    detail::free(p);
-}
+void operator delete(void* p) noexcept { detail::free(p); }
 
-void operator delete(void* p, align_val_t) noexcept
-{
-    detail::free(p);
-}
+void operator delete(void* p, align_val_t) noexcept { detail::free(p); }
 
-void operator delete(void* p, const nothrow_t&) noexcept
-{
-    detail::free(p);
-}
+void operator delete(void* p, const nothrow_t&) noexcept { detail::free(p); }
 
-void operator delete(void* p, align_val_t, const nothrow_t&) noexcept
-{
-    detail::free(p);
-}
+void operator delete(void* p, align_val_t, const nothrow_t&) noexcept { detail::free(p); }
 
-void operator delete(void* p, size_t) noexcept
-{
-    detail::free(p);
-}
+void operator delete(void* p, size_t) noexcept { detail::free(p); }
 
-void operator delete(void* p, size_t, align_val_t) noexcept
-{
-    detail::free(p);
-}
+void operator delete(void* p, size_t, align_val_t) noexcept { detail::free(p); }
 
-void operator delete[](void* p) noexcept
-{
-    detail::free(p);
-}
+void operator delete[](void* p) noexcept { detail::free(p); }
 
-void operator delete[](void* p, align_val_t) noexcept
-{
-    detail::free(p);
-}
+void operator delete[](void* p, align_val_t) noexcept { detail::free(p); }
 
-void operator delete[](void* p, const nothrow_t&) noexcept
-{
-    detail::free(p);
-}
+void operator delete[](void* p, const nothrow_t&) noexcept { detail::free(p); }
 
-void operator delete[](void* p, align_val_t, const nothrow_t&) noexcept
-{
-    detail::free(p);
-}
+void operator delete[](void* p, align_val_t, const nothrow_t&) noexcept { detail::free(p); }
 
-void operator delete[](void* p, size_t) noexcept
-{
-    detail::free(p);
-}
+void operator delete[](void* p, size_t) noexcept { detail::free(p); }
 
-void operator delete[](void* p, size_t, align_val_t) noexcept
-{
-    detail::free(p);
-}
+void operator delete[](void* p, size_t, align_val_t) noexcept { detail::free(p); }

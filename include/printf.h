@@ -1,13 +1,13 @@
 #ifndef __NOSTDLIB_PRINTF_H__
 #define __NOSTDLIB_PRINTF_H__
 
+#include "../bits/user_implement.h"
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
 #include <variant>
-#include "../bits/user_implement.h"
 
 namespace std
 {
@@ -443,7 +443,7 @@ namespace std
     template <typename... Args>
     int printf(const char* format, Args&&... args)
     {
-    return printf_callback(detail::putc, format, args...);
+        return printf_callback(detail::putc, format, args...);
     }
 
     template <typename... Args>

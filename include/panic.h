@@ -1,8 +1,8 @@
 #ifndef __NOSTDLIB_PANIC_H__
 #define __NOSTDLIB_PANIC_H__
+#include "../bits/user_implement.h"
 #include <backtrace.h>
 #include <printf.h>
-#include "../bits/user_implement.h"
 
 namespace std
 {

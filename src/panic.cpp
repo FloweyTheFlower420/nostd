@@ -8,7 +8,7 @@ namespace std
         printf("stacktrace:");
         static void* stack_buffer[0x400];
         size_t n = backtrace(0, 0x400, stack_buffer);
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
             printf("#%d: %p\n", i, stack_buffer[i]);
         }
@@ -16,4 +16,4 @@ namespace std
         detail::errors::__halt();
     }
 
-}
+} // namespace std

@@ -19,7 +19,7 @@ namespace std
         {
             static constexpr size_t __impl()
             {
-                if constexpr(sizeof...(Bs) == 0)
+                if constexpr (sizeof...(Bs) == 0)
                 {
                     return b ? index : -1;
                 }
@@ -28,13 +28,32 @@ namespace std
                     return b ? index : first_index_true<index + 1, Bs...>::value;
                 }
             }
+
         public:
             static inline constexpr size_t value = __impl();
         };
 
+        template <bool... Bs>
+        inline constexpr bool true_count_type = (... + (int)Bs);
+
         template <typename T, typename U>
         using can_construct = is_constructible<U, T>;
 
+        template <typename T>
+        struct is_in_place_tag : false_type
+        {
+        };
+        template <typename T>
+        struct is_in_place_tag<in_place_type_t<T>> : true_type
+        {
+        };
+        template <size_t N>
+        struct is_in_place_tag<in_place_index_t<N>> : true_type
+        {
+        };
+
+        template <bool... Bs>
+        using is_type_valid = bool_constant<true_count_type<Bs...> == 1>;
     } // namespace detail
 
     // forward decls
@@ -89,13 +108,17 @@ namespace std
         using constructor = void (*)(const char*, char*);
         using swapper = void (*)(char*, char*);
 
+        template <typename T>
+        inline static constexpr constructor copy_of = +[](const char* from, char* to) { new (to) T(*(T*)from); };
+
+        template <typename T>
+        inline static constexpr constructor move_of = +[](const char* from, char* to) { new (to) T(std::move(*(T*)from)); };
+
         inline constexpr static deleter destructor[] = {+[](char* p) { reinterpret_cast<Ts*>(p)->~Ts(); }...};
 
-        inline constexpr static constructor copy_constructor[size] = {
-            +[](const char* from, char* to) { new (to) Ts(*(Ts*)from); }...};
+        inline constexpr static constructor copy_constructor[] = {copy_of<Ts>...};
 
-        inline constexpr static constructor move_constructor[size] = {
-            +[](const char* from, char* to) { new (to) Ts(*(Ts*)from); }...};
+        inline constexpr static constructor move_constructor[] = {move_of<Ts>...};
 
         alignas(align) char data[size];
         size_t idx;
@@ -112,7 +135,8 @@ namespace std
         constexpr variant() noexcept(noexcept(first_t())) : idx(0) { new (data) first_t(); }
         constexpr variant(const variant& other) : idx(other.idx) { copy_constructor[other.idx](other.data, data); }
 
-        template <typename T>
+        template <typename T, typename = enable_if_t<sizeof...(Ts) != 0 && !detail::is_in_place_tag<T>::value &&
+                                                     detail::is_type_valid<is_constructible_v<Ts, T>...>::value>>
         constexpr variant(T&& t)
         {
             static_assert(detail::first_index_true<0, is_constructible_v<Ts, T>...>::value != -1, "Cannot match type");
@@ -123,7 +147,7 @@ namespace std
 
         constexpr variant(variant&& other) noexcept((... && is_nothrow_move_constructible_v<Ts>)) : idx(other.index)
         {
-            move_constructor[other.index](other.data, data);
+            move_constructor[other.idx](other.data, data);
         }
 
         template <typename T, typename... Args>
@@ -138,7 +162,7 @@ namespace std
         template <typename T, typename U, typename... Args>
         constexpr explicit variant(in_place_type_t<T>, initializer_list<U> il, Args&&... args)
         {
-            static_assert( detail::first_index_true<0, is_same_v<T, Ts>...>::value != -1, "Cannot match type");
+            static_assert(detail::first_index_true<0, is_same_v<T, Ts>...>::value != -1, "Cannot match type");
             idx = detail::first_index_true<0, is_same_v<T, Ts>...>::value;
             new (data) detail::type_pack_element<detail::first_index_true<0, is_same_v<T, Ts>...>::value, Ts...>(
                 il, forward(args...));
@@ -164,13 +188,13 @@ namespace std
         {
             safe_delete();
             idx = npos;
-            copy_constructor[rhs.index](rhs.data, data);
-            idx = rhs.index;
+            copy_constructor[rhs.idx](rhs.data, data);
+            idx = rhs.idx;
             return *this;
         }
 
-
-        template <typename T>
+        template <typename T, typename = enable_if_t<sizeof...(Ts) != 0 && !detail::is_in_place_tag<T>::value &&
+                                                     detail::is_type_valid<is_constructible_v<Ts, T>...>::value>>
         constexpr variant& operator=(T&& t)
         {
             static_assert(detail::first_index_true<0, is_constructible_v<Ts, T>...>::value != -1, "Cannot match type");
@@ -182,13 +206,13 @@ namespace std
             return *this;
         }
 
-        constexpr variant& operator=(variant&& rhs) noexcept((... && is_nothrow_move_constructible_v<Ts>))
+        constexpr variant& operator=(variant&& rhs)
         {
             idx = npos;
             safe_delete();
-            move_constructor[rhs.index](rhs.data, data);
-            idx = rhs.index;
-            rhs.index = npos;
+            move_constructor[rhs.idx](rhs.data, data);
+            idx = rhs.idx;
+            rhs.idx = npos;
             return *this;
         }
 

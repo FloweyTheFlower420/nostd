@@ -1,9 +1,9 @@
 #ifndef __NOSTDLIB_BITS_TYPE_TRAITS_CONSTRUCT_H__
 #define __NOSTDLIB_BITS_TYPE_TRAITS_CONSTRUCT_H__
+#include "declval.h"
 #include "type_traits_cv.h"
 #include "type_traits_ptr.h"
 #include "type_traits_utils.h"
-#include "declval.h"
 namespace std
 {
     template <typename T, typename... Args>
@@ -154,5 +154,5 @@ namespace std
     using has_virtual_destructor = bool_constant<__has_virtual_destructor(T)>;
     template <typename T>
     inline constexpr bool has_virtual_destructor_v = has_virtual_destructor<T>::value;
-}
+} // namespace std
 #endif
