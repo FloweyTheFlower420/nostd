@@ -298,7 +298,30 @@ namespace std
     const void* memchr(const void* s, int c, size_t n);
 
     int memcmp(const void* s1, const void* s2, size_t n);
-    void* memset(void* s, int c, size_t n);
+    void* memset(void* s, int c, size_t n)
+    {
+        c = c & 0xff;
+        size_t v = c | (c >> 8) | (c >> 16) | (c >> 24);
+        char* b = (char*) s;
+        if constexpr(sizeof(size_t) == 8)
+            v |= ((size_t)c >> 32) | ((size_t)c >> 40) | ((size_t)c >> 48) | ((size_t)c >> 56); 
+       
+        while(((size_t) b) % alignof(size_t) != 0 && n-- != 0)
+            *b++ = c;
+
+        if(n == 0)
+            return s;
+        
+        size_t* sp = (size_t*) b;
+        for(size_t i = 0; i < n / 8; i++)
+            sp[i] = v;
+
+        b = (char*) sp;
+        for(size_t i = 0; i < n % 8; i++)
+            b[i] = c;
+
+        return s;
+    }
 
     void* memcpy(void* __restrict dest, const void* __restrict src, size_t n)
     {
@@ -307,7 +330,7 @@ namespace std
         char* d = (char*)dest;
         const char* s = (const char*)src;
 
-        while (((size_t)d % alignof(size_t) != 0) && ((size_t)s % alignof(size_t)) && n--)
+        while (((size_t)d % alignof(size_t) != 0) && ((size_t)s % alignof(size_t) != 0) && n-- != 0)
             *d++ = *s++;
 
         if (n == 0)

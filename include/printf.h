@@ -222,19 +222,18 @@ namespace std
             case 'o': {
                 auto val = get<uidx>(fmtargs.next());
                 itoa(8, val);
-                width_len = guess_len(10, val, cmd.flags, cmd.precision);
-                precision_len = precision_pad_chars(10, val, cmd.precision);
+                width_len = guess_len(8, val, cmd.flags, cmd.precision);
+                precision_len = precision_pad_chars(8, val, cmd.precision);
                 break;
             }
             case 'x':
             case 'X': {
                 auto val = get<uidx>(fmtargs.next());
                 itoa(16, val);
-                width_len = guess_len(10, val, cmd.flags, cmd.precision);
-                precision_len = precision_pad_chars(10, val, cmd.precision);
+                width_len = guess_len(16, val, cmd.flags, cmd.precision);
+                precision_len = precision_pad_chars(16, val, cmd.precision);
                 break;
             }
-            break;
             case 'n':
                 *get<ptrindex>(fmtargs.next()) = pc;
                 return;

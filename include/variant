@@ -139,10 +139,9 @@ namespace std
                                                      detail::is_type_valid<is_constructible_v<Ts, T>...>::value>>
         constexpr variant(T&& t)
         {
-            static_assert(detail::first_index_true<0, is_constructible_v<Ts, T>...>::value != -1, "Cannot match type");
-            idx = detail::first_index_true<0, is_constructible_v<Ts, T>...>::value;
-            new (data) detail::type_pack_element<detail::first_index_true<0, is_constructible_v<Ts, T>...>::value, Ts...>(
-                forward(t));
+            using pos = detail::first_index_true<0, is_constructible_v<Ts, T>...>;
+            idx = pos::value;
+            new (data) typename detail::type_pack_element<pos::value, Ts...>::type(forward<T>(t));
         }
 
         constexpr variant(variant&& other) noexcept((... && is_nothrow_move_constructible_v<Ts>)) : idx(other.index)
