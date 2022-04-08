@@ -8,54 +8,13 @@
 #include <cstring>
 #include <initializer_list>
 #include <variant>
+#include <cstdarg>
 
 namespace std
 {
 
     namespace detail::printf
     {
-        using printf_argument_wrapper =
-            variant<signed char, short, int, long, long long, unsigned char, unsigned short, unsigned int, unsigned long,
-                    unsigned long long, intmax_t, uintmax_t, ptrdiff_t, size_t, const char*, void*, signed char*, short*,
-                    int*, long*, long long*, intmax_t*, ptrdiff_t*, size_t*>;
-        class fmtargs_wrapper
-
-        {
-            size_t index;
-            size_t size;
-            printf_argument_wrapper* fmtargs;
-
-        public:
-            template <typename... Args>
-            fmtargs_wrapper(Args&&... args)
-            {
-                index = 0;
-                size = sizeof...(args);
-                fmtargs = new printf_argument_wrapper[size];
-                initializer_list<printf_argument_wrapper> il{printf_argument_wrapper((remove_cv_t<decay_t<Args>>)args)...};
-                size_t i = 0;
-                for (auto&& e : il)
-                    fmtargs[i++] = std::move(e);
-            }
-
-            printf_argument_wrapper& next()
-            {
-                if (index == size)
-                    detail::errors::__printf_argument_notfound();
-                return fmtargs[index++];
-            }
-
-            printf_argument_wrapper& get()
-
-            {
-                if (index == size)
-                    detail::errors::__printf_argument_notfound();
-                return fmtargs[index];
-            }
-
-            ~fmtargs_wrapper() { delete[] fmtargs; }
-        };
-
         enum status
         {
             ZEROPAD = 1 << 0,
@@ -123,11 +82,10 @@ namespace std
         };
 
         template <typename P>
-        void handle_special(fmtargs_wrapper& fmtargs, const char*& format, printf_command& cmd, P print)
+        void handle_special(va_list fmtargs, const char*& format, printf_command& cmd, P print)
         {
             size_t width_len;
             const char* str;
-            void* ptr;
             char buf[sizeof(void*) * 2] = {'0'};
             const char* int2char = (isupper(*format) || (cmd.flags & UPPERCASE)) ? "0123456789ABCDEF" : "0123456789abcdef";
             switch (*format)
@@ -136,7 +94,7 @@ namespace std
                 width_len = 1;
                 break;
             case 's':
-                width_len = strlen(str = get<const char*>(fmtargs.next()));
+                width_len = strlen(str = va_arg(fmtargs, const char*));
                 break;
             case 'p':
                 width_len = sizeof(void*) * 2;
@@ -145,21 +103,21 @@ namespace std
 
             width_len = cmd.width > width_len ? cmd.width - width_len : 0;
 
-            if (cmd.flags & LEFT)
+            if (!(cmd.flags & LEFT))
                 for (size_t i = 0; i < width_len; i++)
                     print(cmd.padchar);
 
             switch (*format)
             {
             case 'c':
-                print(get<int>(fmtargs.next()));
+                print(va_arg(fmtargs, int));
                 return;
             case 's':
                 while (*str)
                     print(*str++);
                 return;
             case 'p':
-                uint64_t v = (uint64_t)ptr;
+                uint64_t v = (uint64_t)va_arg(fmtargs, void*);
                 size_t index = 0;
                 while (v)
                 {
@@ -171,14 +129,14 @@ namespace std
                     print(buf[i]);
             }
 
-            if (!(cmd.flags & LEFT))
+            if (cmd.flags & LEFT)
                 for (size_t i = 0; i < width_len; i++)
                     print(cmd.padchar);
         }
 
         // prints an properly formatted integer
-        template <size_t idx, size_t uidx, size_t ptrindex, typename P>
-        void format_int(fmtargs_wrapper& fmtargs, const printf_command& cmd, const char* format, size_t pc, P print)
+        template <typename s, typename u, typename p, typename P>
+        void format_int(va_list fmtargs, const printf_command& cmd, const char* format, size_t pc, P print)
         {
             char tmp[16] = {0};
             const char* int2char = (isupper(*format) || (cmd.flags & UPPERCASE)) ? "0123456789ABCDEF" : "0123456789abcdef";
@@ -199,11 +157,14 @@ namespace std
                 }
             };
 
+            using _s = std::conditional_t<(sizeof(s) > sizeof(int)), s, int>;
+            using _u = std::conditional_t<(sizeof(u) > sizeof(unsigned int)), u, unsigned int>;
+
             switch (*format)
             {
             case 'd':
             case 'i': {
-                auto val = get<idx>(fmtargs.next());
+                s val = va_arg(fmtargs, _s);
                 itoa(10, val);
                 if (val < 0)
                     sign = true;
@@ -213,14 +174,14 @@ namespace std
                 break;
             }
             case 'u': {
-                auto val = get<uidx>(fmtargs.next());
+                u val = va_arg(fmtargs, _u);
                 itoa(10, val);
                 width_len = guess_len(10, val, cmd.flags, cmd.precision);
                 precision_len = precision_pad_chars(10, val, cmd.precision);
                 break;
             }
             case 'o': {
-                auto val = get<uidx>(fmtargs.next());
+                u val = va_arg(fmtargs, _u);
                 itoa(8, val);
                 width_len = guess_len(8, val, cmd.flags, cmd.precision);
                 precision_len = precision_pad_chars(8, val, cmd.precision);
@@ -228,14 +189,14 @@ namespace std
             }
             case 'x':
             case 'X': {
-                auto val = get<uidx>(fmtargs.next());
+                u val = va_arg(fmtargs, _u);
                 itoa(16, val);
                 width_len = guess_len(16, val, cmd.flags, cmd.precision);
                 precision_len = precision_pad_chars(16, val, cmd.precision);
                 break;
             }
             case 'n':
-                *get<ptrindex>(fmtargs.next()) = pc;
+                *va_arg(fmtargs, p) = pc;
                 return;
             default:
                 detail::errors::__printf_undefined_specifier_for_length();
@@ -243,7 +204,7 @@ namespace std
 
             width_len = cmd.width > width_len ? cmd.width - width_len : 0;
 
-            if (cmd.flags & LEFT)
+            if (!(cmd.flags & LEFT))
                 for (int i = 0; i < width_len; i++)
                     print(cmd.padchar);
 
@@ -266,7 +227,7 @@ namespace std
                     print(tmp[i]);
             }
 
-            if (!(cmd.flags & LEFT))
+            if (cmd.flags & LEFT)
                 for (int i = 0; i < width_len; i++)
                     print(cmd.padchar);
         }
@@ -274,10 +235,9 @@ namespace std
     } // namespace detail::printf
 
     template <typename C, typename... Args>
-    int printf_callback(C printer, const char* format, Args&&... args)
+    int printf_callback(C printer, const char* format, va_list fmtargs)
     {
         using namespace detail::printf;
-        fmtargs_wrapper fmtargs(args...);
         size_t printed_characters = 0;
 
         auto atoi_inc_str = [&]() mutable {
@@ -333,7 +293,7 @@ namespace std
 
             else if (*format == '*')
             {
-                auto w = get<int>(fmtargs.next());
+                auto w = va_arg(fmtargs, int);
                 if (w < 0)
                 {
                     cmd.flags |= LEFT;
@@ -353,7 +313,7 @@ namespace std
                     cmd.precision = atoi_inc_str();
                 else if (*format == '*')
                 {
-                    auto prec = get<int>(fmtargs.next());
+                    auto prec = va_arg(fmtargs, int);
                     cmd.precision = prec > 0 ? prec : 0;
                     format++;
                 }
@@ -408,28 +368,28 @@ namespace std
             switch (len)
             {
             case NORMAL:
-                format_int<2, 7, 18>(fmtargs, cmd, format, printed_characters, print);
+                format_int<int, unsigned, int*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case CHAR:
-                format_int<0, 5, 16>(fmtargs, cmd, format, printed_characters, print);
+                format_int<signed char, unsigned char, char*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case SHORT:
-                format_int<1, 6, 17>(fmtargs, cmd, format, printed_characters, print);
+                format_int<short, unsigned short, short*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case LONG:
-                format_int<3, 8, 19>(fmtargs, cmd, format, printed_characters, print);
+                format_int<long, unsigned long, long*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case LLONG:
-                format_int<4, 9, 20>(fmtargs, cmd, format, printed_characters, print);
+                format_int<long long, unsigned long long, long long*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case INTMAX:
-                format_int<10, 11, 21>(fmtargs, cmd, format, printed_characters, print);
+                format_int<intmax_t, uintmax_t, intmax_t*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case PTRDIFF:
-                format_int<12, 12, 22>(fmtargs, cmd, format, printed_characters, print);
+                format_int<ptrdiff_t, ptrdiff_t, ptrdiff_t*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             case SIZE:
-                format_int<13, 13, 23>(fmtargs, cmd, format, printed_characters, print);
+                format_int<size_t, size_t, size_t*>(fmtargs, cmd, format, printed_characters, print);
                 break;
             }
 
@@ -439,21 +399,25 @@ namespace std
         return printed_characters;
     }
 
-    template <typename... Args>
-    int printf(const char* format, Args&&... args)
+    inline int printf(const char* format, ...)
     {
-        return printf_callback(detail::putc, format, args...);
+        va_list va;
+        va_start(va, format);
+        return printf_callback(detail::putc, format, va);
     }
 
-    template <typename... Args>
-    int sprintf(char* buffer, const char* format, Args&&... args)
+    inline int sprintf(char* buffer, const char* format, ...)
     {
-        return printf_callback([&, buffer](char ch) mutable { *buffer++ = ch; }, format, args...);
+        va_list va;
+        va_start(va, format);
+        return printf_callback([&, buffer](char ch) mutable { *buffer++ = ch; }, format, va);
     }
 
-    template <typename... Args>
-    int snprintf(char* buffer, size_t count, const char* format, Args&&... args)
+    inline int snprintf(char* buffer, size_t count, const char* format, ...)
     {
+        va_list va;
+        va_start(va, format);
+
         return printf_callback(
             [&, buffer](char ch) mutable {
                 if (count)
@@ -462,7 +426,7 @@ namespace std
                     count--;
                 }
             },
-            format, args...);
+            format, va);
     }
 } // namespace std
 
