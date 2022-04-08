@@ -302,22 +302,22 @@ namespace std
     {
         c = c & 0xff;
         size_t v = c | (c >> 8) | (c >> 16) | (c >> 24);
-        char* b = (char*) s;
-        if constexpr(sizeof(size_t) == 8)
-            v |= ((size_t)c >> 32) | ((size_t)c >> 40) | ((size_t)c >> 48) | ((size_t)c >> 56); 
-       
-        while(((size_t) b) % alignof(size_t) != 0 && n-- != 0)
+        char* b = (char*)s;
+        if constexpr (sizeof(size_t) == 8)
+            v |= ((size_t)c >> 32) | ((size_t)c >> 40) | ((size_t)c >> 48) | ((size_t)c >> 56);
+
+        while (((size_t)b) % alignof(size_t) != 0 && n-- != 0)
             *b++ = c;
 
-        if(n == 0)
+        if (n == 0)
             return s;
-        
-        size_t* sp = (size_t*) b;
-        for(size_t i = 0; i < n / 8; i++)
+
+        size_t* sp = (size_t*)b;
+        for (size_t i = 0; i < n / 8; i++)
             sp[i] = v;
 
-        b = (char*) sp;
-        for(size_t i = 0; i < n % 8; i++)
+        b = (char*)sp;
+        for (size_t i = 0; i < n % 8; i++)
             b[i] = c;
 
         return s;
