@@ -96,6 +96,7 @@ namespace std
             if (c1)
                 return c1 - c2;
         } while (c1 == c2);
+        return 0;
     }
 
     int strncmp(const char* s1, const char* s2, size_t n)
@@ -301,10 +302,10 @@ namespace std
     void* memset(void* s, int c, size_t n)
     {
         c = c & 0xff;
-        size_t v = c | (c >> 8) | (c >> 16) | (c >> 24);
+        size_t v = c | (c << 8) | (c << 16) | (c << 24);
         char* b = (char*)s;
         if constexpr (sizeof(size_t) == 8)
-            v |= ((size_t)c >> 32) | ((size_t)c >> 40) | ((size_t)c >> 48) | ((size_t)c >> 56);
+            v |= ((size_t)c << 32) | ((size_t)c << 40) | ((size_t)c << 48) | ((size_t)c << 56);
 
         while (((size_t)b) % alignof(size_t) != 0 && n-- != 0)
             *b++ = c;
@@ -339,12 +340,9 @@ namespace std
         size_t* sd = (size_t*)d;
         const size_t* ss = (size_t*)s;
 
-        size_t i = n / sizeof(size_t) - 1;
+        size_t i = n / sizeof(size_t);
         while (i--)
-            sd[i] = ss[i];
-
-        sd += (n / sizeof(size_t) - 1);
-        ss += (n / sizeof(size_t) - 1);
+            *sd++ = *ss++;
 
         n %= sizeof(size_t);
 

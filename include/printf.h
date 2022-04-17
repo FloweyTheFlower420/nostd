@@ -62,7 +62,7 @@ namespace std
                     ret++;
             }
 
-            return ret;
+            return ret == 0 ? 1 : ret;
         }
 
         // obtains the amount of '0' to print
@@ -86,7 +86,8 @@ namespace std
         {
             size_t width_len;
             const char* str;
-            char buf[sizeof(void*) * 2] = {'0'};
+            char buf[sizeof(void*) * 2] = {};
+            std::memset(buf, '0', sizeof(buf));
             const char* int2char = (isupper(*format) || (cmd.flags & UPPERCASE)) ? "0123456789ABCDEF" : "0123456789abcdef";
             switch (*format)
             {
@@ -146,6 +147,11 @@ namespace std
             bool is_signed = false;
 
             auto itoa = [&](unsigned radix, auto val) {
+                if(val == 0)
+                {
+                    tmp[0] = '0';
+                    return;
+                }
                 if constexpr (is_signed_v<decltype(val)>)
                     if (val < 0)
                         val = -val;
@@ -205,7 +211,7 @@ namespace std
             width_len = cmd.width > width_len ? cmd.width - width_len : 0;
 
             if (!(cmd.flags & LEFT))
-                for (int i = 0; i < width_len; i++)
+                for (size_t i = 0; i < width_len; i++)
                     print(cmd.padchar);
 
             if (sign)
@@ -218,7 +224,7 @@ namespace std
                     print('+');
             }
 
-            for (int i = 0; i < precision_len; i++)
+            for (size_t i = 0; i < precision_len; i++)
                 print('0');
 
             for (int i = 15; i >= 0; i--)
@@ -228,7 +234,7 @@ namespace std
             }
 
             if (cmd.flags & LEFT)
-                for (int i = 0; i < width_len; i++)
+                for (size_t i = 0; i < width_len; i++)
                     print(cmd.padchar);
         }
 
@@ -404,6 +410,7 @@ namespace std
         va_list va;
         va_start(va, format);
         return printf_callback(detail::putc, format, va);
+        va_end(va);
     }
 
     inline int sprintf(char* buffer, const char* format, ...)
@@ -411,6 +418,7 @@ namespace std
         va_list va;
         va_start(va, format);
         return printf_callback([&, buffer](char ch) mutable { *buffer++ = ch; }, format, va);
+        va_end(va);
     }
 
     inline int snprintf(char* buffer, size_t count, const char* format, ...)
@@ -427,6 +435,7 @@ namespace std
                 }
             },
             format, va);
+        va_end(va);
     }
 } // namespace std
 
