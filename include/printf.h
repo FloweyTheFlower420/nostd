@@ -147,7 +147,7 @@ namespace std
             bool is_signed = false;
 
             auto itoa = [&](unsigned radix, auto val) {
-                if(val == 0)
+                if (val == 0)
                 {
                     tmp[0] = '0';
                     return;
