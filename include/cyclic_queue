@@ -1,0 +1,96 @@
+// vim: set ft=cpp:
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+#include <new>
+
+namespace std
+{
+    template<typename T, size_t N, bool inplace = sizeof(T) * N < 256>
+    class cyclic_queue
+    {
+        inline static constexpr size_t real_size = N + 1;
+        struct T1
+        {
+            char buf[real_size * sizeof(T)];
+            size_t head, back;
+        };
+
+        struct T2
+        {
+            T* buf;
+            size_t head, back;
+        };
+ 
+        using buffer_t = conditional_t<
+            inplace,
+            T1,
+            T2
+        >;
+
+        buffer_t impl;
+    public:
+        cyclic_queue()
+        {
+            if constexpr(!inplace)
+                impl.buf = new char[real_size * sizeof(T)];
+
+            impl.head = impl.back = 0;
+        }
+
+        bool empty()
+        {
+            return impl.head == impl.back;
+        }
+
+        size_t size()
+        {
+            return (impl.head + real_size - impl.back) % real_size;
+        }
+
+        T& front()
+        {
+            return *((T*)(impl.buf + ((((impl.head + N) % real_size) * sizeof(T)))));
+        }
+
+        T& back()
+        {
+            return *((T*)(impl.buf + impl.back * sizeof(T)));
+        }
+
+        bool push(const T& v)
+        {
+            if((impl.head + 1) % real_size == impl.back)
+                return false;
+
+
+            new (&impl.buf[impl.head * sizeof(T)]) T(v);
+            impl.head = (impl.head + 1) % real_size;
+        }
+
+        template <typename... Args>
+        bool emplace(Args&&... args)
+        {
+            if((impl.head + 1) % real_size == impl.back)
+                return false;
+
+            new (&impl.buf[impl.head * sizeof(T)]) T(std::forward<Args>(args)...);
+            impl.head = (impl.head + 1) % real_size;
+        }
+
+        void pop()
+        {
+            impl.head = (impl.head + N) % real_size;
+            front().~T();
+        }
+
+        ~cyclic_queue()
+        {
+             for(size_t i = 0; i < size(); i++)
+                 pop();
+
+             if constexpr(inplace)
+                 delete impl.buf;
+        }
+    };
+}

@@ -112,11 +112,11 @@ namespace std
             {
             case 'c':
                 print(va_arg(fmtargs, int));
-                return;
+                break;
             case 's':
                 while (*str)
                     print(*str++);
-                return;
+                break;
             case 'p':
                 uint64_t v = (uint64_t)va_arg(fmtargs, void*);
                 size_t index = 0;
