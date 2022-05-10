@@ -66,6 +66,7 @@ namespace std
 
             new (&impl.buf[impl.head * sizeof(T)]) T(v);
             impl.head = (impl.head + 1) % real_size;
+            return true;
         }
 
         template <typename... Args>
@@ -76,6 +77,7 @@ namespace std
 
             new (&impl.buf[impl.head * sizeof(T)]) T(std::forward<Args>(args)...);
             impl.head = (impl.head + 1) % real_size;
+            return true;
         }
 
         void pop()
@@ -89,8 +91,14 @@ namespace std
              for(size_t i = 0; i < size(); i++)
                  pop();
 
-             if constexpr(inplace)
+             if constexpr(!inplace)
                  delete impl.buf;
         }
+    };
+
+    template<typename T>
+    class dynamic_circular_queue
+    {
+    
     };
 }
