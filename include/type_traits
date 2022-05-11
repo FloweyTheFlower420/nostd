@@ -7,6 +7,7 @@
 #include "../bits/type_traits_supported_operations.h"
 #include "../bits/type_traits_utils.h"
 #include <cstddef>
+#include <utility>
 
 namespace std
 {
@@ -37,10 +38,11 @@ namespace std
     } // namespace detail
 
     template <typename B, typename D>
-    struct is_base_of
-        : bool_constant<is_class<B>::value && is_class<D>::value&& decltype(detail::test_pre_is_base_of<B, D>(0))::value>
-    {
-    };
+    using is_base_of =
+        bool_constant<is_class<B>::value && is_class<D>::value&& decltype(detail::test_pre_is_base_of<B, D>(0))::value>;
+
+    template <typename B, typename D>
+    inline constexpr bool is_base_of_v = is_base_of<B, D>::value;
 
     namespace detail
     {
@@ -437,6 +439,76 @@ namespace std
             alignas(align) unsigned char data[length];
         };
     };
+
+    template <typename T>
+    class reference_wrapper;
+
+    namespace detail
+    {
+        template <typename>
+        inline constexpr bool is_reference_wrapper_v = false;
+        template <typename U>
+        inline constexpr bool is_reference_wrapper_v<reference_wrapper<U>> = true;
+
+        template <class T>
+        struct invoke_impl
+        {
+            template <class F, class... Args>
+            static auto call(F&& f, Args&&... args) -> decltype(forward<F>(f)(forward<Args>(args)...));
+        };
+
+        template <typename B, typename MT>
+        struct invoke_impl<MT B::*>
+        {
+            template <typename T, typename Td = decay_t<T>, typename = enable_if_t<is_base_of_v<B, Td>>>
+            static auto get(T&& t) -> T&&;
+
+            template <typename T, typename Td = decay_t<T>, typename = enable_if_t<is_reference_wrapper_v<Td>>>
+            static auto get(T&& t) -> decltype(t.get());
+
+            template <typename T, typename Td = decay_t<T>,
+                      typename = enable_if_t<!is_base_of_v<B, Td> && !is_reference_wrapper_v<Td>>>
+            static auto get(T&& t) -> decltype(*forward<T>(t));
+
+            template <typename T, typename... Args, typename MT1, typename = enable_if_t<is_function_v<MT1>>>
+            static auto call(MT1 B::*pmf, T&& t, Args&&... args)
+                -> decltype((invoke_impl::get(forward<T>(t)).*pmf)(forward<Args>(args)...));
+
+            template <class T>
+            static auto call(MT B::*pmd, T&& t) -> decltype(invoke_impl::get(forward<T>(t)).*pmd);
+        };
+
+        template <class F, class... Args, class Fd = typename decay<F>::type>
+        auto INVOKE(F&& f, Args&&... args) -> decltype(invoke_impl<Fd>::call(forward<F>(f), forward<Args>(args)...));
+
+    } // namespace detail
+
+    namespace detail
+    {
+        template <typename AlwaysVoid, typename, typename...>
+        struct invoke_result
+        {
+        };
+
+        template <typename F, typename... Args>
+        struct invoke_result<decltype(void(detail::INVOKE(std::declval<F>(), std::declval<Args>()...))), F, Args...>
+        {
+            using type = decltype(detail::INVOKE(std::declval<F>(), std::declval<Args>()...));
+        };
+    } // namespace detail
+
+    template <typename>
+    struct result_of;
+    template <typename F, typename... ArgTypes>
+    struct result_of<F(ArgTypes...)> : detail::invoke_result<void, F, ArgTypes...>
+    {
+    };
+
+    template <typename F, typename... ArgTypes>
+    struct invoke_result : detail::invoke_result<void, F, ArgTypes...> {};
+
+    template<typename F, typename... Args>
+    using invoke_result_t = typename invoke_result<F, Args...>::type;
 } // namespace std
 
 #include "../bits/type_traits_swap.h"
