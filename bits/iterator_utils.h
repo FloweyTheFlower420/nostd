@@ -14,19 +14,19 @@ namespace std
             I current;
 
             template <typename It>
-            using ignored = std::enable_if_t<std::is_convertible<It, I>::value>;
+            using ignored = enable_if_t<is_convertible_v<It, I>>;
 
         public:
             using iterator_type = I;
-            using iterator_category = typename std::iterator_traits<I>::iterator_category;
-            using value_type = typename std::iterator_traits<I>::value_type;
-            using difference_type = typename std::iterator_traits<I>::difference_type;
-            using reference = typename std::iterator_traits<I>::reference;
-            using pointer = typename std::iterator_traits<I>::pointer;
+            using iterator_category = typename iterator_traits<I>::iterator_category;
+            using value_type = typename iterator_traits<I>::value_type;
+            using difference_type = typename iterator_traits<I>::difference_type;
+            using reference = typename iterator_traits<I>::reference;
+            using pointer = typename iterator_traits<I>::pointer;
 
             constexpr iterator_wrapper() noexcept : current(I()) {}
             explicit iterator_wrapper(const I& i) noexcept : current(i) {}
-            template <typename It, typename = std::enable_if_t<std::is_convertible_v<It, I>>>
+            template <typename It, typename = enable_if_t<is_convertible_v<It, I>>>
             iterator_wrapper(const iterator_wrapper<It, C>& i) noexcept : current(i.base())
             {
             }
