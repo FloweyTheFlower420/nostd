@@ -1,3 +1,4 @@
+// vim: set ft=cpp
 #ifndef __NOSTDLIB_INCLUDE_CSTDDEF_H__
 #define __NOSTDLIB_INCLUDE_CSTDDEF_H__
 
@@ -29,7 +30,7 @@ namespace std
             }
         }
     } // namespace detail
-    struct alignas(decltype(std::detail::max_align_of<char, short, int, long, long long, double, float, long double>()))
+    struct alignas(decltype(std::detail::max_align_of<char, short, int, long, long long, double, float>()))
         max_align_t
     {
     };

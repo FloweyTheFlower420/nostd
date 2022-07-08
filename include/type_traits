@@ -42,6 +42,9 @@ namespace std
     {
     };
 
+    template <typename B, typename D>
+    inline constexpr auto is_base_of_v = is_base_of<B, D>::value;
+
     namespace detail
     {
         template <typename T>

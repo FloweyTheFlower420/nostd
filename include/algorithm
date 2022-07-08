@@ -1,0 +1,148 @@
+// vim: set ft=cpp:
+#ifndef __NOSTDLIB_ALGORITHM_H__
+#define __NOSTDLIB_ALGORITHM_H__
+#include <iterator>
+#include <utility>
+
+namespace std
+{
+    template <class It, class F>
+    constexpr F for_each(It first, It last, F f)
+    {
+        for (; first != last; ++first)
+            f(*first);
+        return f;
+    }
+
+    template <class It, class S, class F>
+    It for_each_n(It first, S n, F f)
+    {
+        for (S i = 0; i < n; ++first, (void)++i)
+            f(*first);
+        return first;
+    }
+
+    template <class It, class T>
+    typename iterator_traits<It>::difference_type count(It first, It last, const T& value)
+    {
+        typename iterator_traits<It>::difference_type ret = 0;
+        for (; first != last; ++first)
+            if (*first == value)
+                ret++;
+        return ret;
+    }
+
+    template <class It, class F>
+    typename iterator_traits<It>::difference_type count_if(It first, It last, F p)
+    {
+        typename iterator_traits<It>::difference_type ret = 0;
+        for (; first != last; ++first)
+            if (p(*first))
+                ret++;
+        return ret;
+    }
+
+    template <class It1, class It2>
+    std::pair<It1, It2> mismatch(It1 first1, It1 last1, It2 first2)
+    {
+        while (first1 != last1 && *first1 == *first2)
+        {
+            ++first1, ++first2;
+        }
+        return std::make_pair(first1, first2);
+    }
+
+    template <class InputIt1, class InputIt2, class BinaryPredicate>
+    std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1, InputIt2 first2, BinaryPredicate p)
+    {
+        while (first1 != last1 && p(*first1, *first2))
+        {
+            ++first1, ++first2;
+        }
+        return std::make_pair(first1, first2);
+    }
+
+    template <class InputIt1, class InputIt2>
+    std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)
+    {
+        while (first1 != last1 && first2 != last2 && *first1 == *first2)
+        {
+            ++first1, ++first2;
+        }
+        return std::make_pair(first1, first2);
+    }
+
+    template <class InputIt1, class InputIt2, class BinaryPredicate>
+    std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2,
+                                           BinaryPredicate p)
+    {
+        while (first1 != last1 && first2 != last2 && p(*first1, *first2))
+        {
+            ++first1, ++first2;
+        }
+        return std::make_pair(first1, first2);
+    }
+
+    template <class InputIt, class T>
+    constexpr InputIt find(InputIt first, InputIt last, const T& value)
+    {
+        for (; first != last; ++first)
+        {
+            if (*first == value)
+            {
+                return first;
+            }
+        }
+        return last;
+    }
+
+    Second version
+
+        template <class InputIt, class UnaryPredicate>
+        constexpr InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+    {
+        for (; first != last; ++first)
+        {
+            if (p(*first))
+            {
+                return first;
+            }
+        }
+        return last;
+    }
+
+    Third version
+
+        template <class InputIt, class UnaryPredicate>
+        constexpr InputIt find_if_not(InputIt first, InputIt last, UnaryPredicate q)
+    {
+        for (; first != last; ++first)
+        {
+            if (!q(*first))
+            {
+                return first;
+            }
+        }
+        return last;
+    }
+
+    template <class InputIt, class UnaryPredicate>
+    constexpr bool all_of(InputIt first, InputIt last, UnaryPredicate p)
+    {
+        return std::find_if_not(first, last, p) == last;
+    }
+
+    template <class InputIt, class UnaryPredicate>
+    constexpr bool any_of(InputIt first, InputIt last, UnaryPredicate p)
+    {
+        return std::find_if(first, last, p) != last;
+    }
+
+    template <class InputIt, class UnaryPredicate>
+    constexpr bool none_of(InputIt first, InputIt last, UnaryPredicate p)
+    {
+        return std::find_if(first, last, p) == last;
+    }
+} // namespace std
+
+#endif

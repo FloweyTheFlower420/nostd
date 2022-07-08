@@ -92,7 +92,7 @@ namespace std
 
     template <typename T>
     struct is_integral
-        : matches_any<is_same, remove_cv_t<T>, bool, char, char32_t, wchar_t, short, int, long, long long, __int128>
+        : matches_any<is_same, remove_cv_t<T>, bool, char, char32_t, wchar_t, short, int, long, long long>
     {
     };
     template <typename T>
