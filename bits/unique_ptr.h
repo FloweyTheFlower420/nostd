@@ -49,7 +49,7 @@ namespace std
                 delete tmp;
         }
 
-        constexpr void swap(unique_ptr& other) noexcept { std::swap(other.buf, buf); }
+        // constexpr void swap(unique_ptr& other) noexcept { std::swap(other.buf, buf); }
         constexpr pointer get() const noexcept { return buf; }
         constexpr explicit operator bool() const noexcept { return (bool)buf; }
 
@@ -112,7 +112,7 @@ namespace std
                 delete[] tmp;
         }
 
-        constexpr void swap(unique_ptr& other) noexcept { std::swap(other.buf, buf); }
+        // constexpr void swap(unique_ptr& other) noexcept { std::swap(other.buf, buf); }
         constexpr pointer get() const noexcept { return buf; }
         constexpr explicit operator bool() const noexcept { return (bool)buf; }
 

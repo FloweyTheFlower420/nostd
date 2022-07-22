@@ -39,7 +39,7 @@ namespace std
     template <typename _Ret, typename... _Args>
     void launder(_Ret (*)(_Args...)) = delete;
     template <typename _Ret, typename... _Args>
-    void launder(_Ret (*)(_Args......)) = delete;
+    void launder(_Ret (*)(_Args..., ...)) = delete;
 
     void launder(void*) = delete;
     void launder(const void*) = delete;

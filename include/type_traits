@@ -440,6 +440,24 @@ namespace std
             alignas(align) unsigned char data[length];
         };
     };
+
+    constexpr inline bool is_constant_evaluated() noexcept
+    {
+#if __cpp_if_consteval >= 202106L
+        if consteval 
+        { 
+            return true; 
+        }
+        else
+        {
+            return false;
+        }
+#elif __has_builtin(__builtin_is_constant_evaluated)
+        return __builtin_is_constant_evaluated();
+#else
+        static_assert(false, "required builtin for is_constant_evaluated not found");
+#endif
+    }
 } // namespace std
 
 #include "../bits/type_traits_swap.h"

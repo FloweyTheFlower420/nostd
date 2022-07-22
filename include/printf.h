@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
-#include <variant>
+#include <type_traits>
 
 namespace std
 {
