@@ -4,7 +4,7 @@ namespace std
 {
     size_t backtrace(size_t skip, size_t count, void** buf, size_t* base_ptr)
     {
-        __asm__ __volatile__("movq %%rbp, %0" : "=g"(base_ptr) : : "memory");
+        asm volatile("movq %%rbp, %0" : "=g"(base_ptr) : : "memory");
         size_t n = 0;
         while (true)
         {

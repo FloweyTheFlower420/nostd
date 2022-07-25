@@ -1,6 +1,9 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 #include <cstdint>
+#include <cstddef>
+#include <cstring>
+#include <utility>
 
 namespace std
 {
@@ -41,6 +44,28 @@ namespace std
         v &= ~(((1ULL << (uint64_t)(end - start + 1)) - 1) << start);
         v |= (((1ULL << (uint64_t)(end - start + 1)) - 1) << start) & to_set;
     }
+
+    template<typename T>
+    T* make_bitarray(std::size_t bits)
+    {
+        std::size_t count = div_roundup(bits, sizeof(T) * 8);
+        T* buf = new T[count];
+        memset(buf, 0xff, bits / 8);
+        if(bits % 8)
+            ((uint8_t*) buf)[bits / 8] = (1ul << (bits % 8)) - 1;
+        return buf;
+    }
+
+    template<typename T>
+    T* make_bitarray(std::size_t bits, void* b)
+    {
+        T* buf = (T*) b;
+        memset(buf, 0xff, bits / 8);
+        if(bits % 8)
+            ((uint8_t*) buf)[bits / 8] = (1ul << (bits % 8)) - 1;
+        return (T*) b;
+    }
+
 } // namespace std
 
 #endif

@@ -89,6 +89,7 @@ namespace std
             char buf[sizeof(void*) * 2] = {};
             std::memset(buf, '0', sizeof(buf));
             const char* int2char = (isupper(*format) || (cmd.flags & UPPERCASE)) ? "0123456789ABCDEF" : "0123456789abcdef";
+            bool b;
             switch (*format)
             {
             case 'c':
@@ -99,6 +100,9 @@ namespace std
                 break;
             case 'p':
                 width_len = sizeof(void*) * 2;
+                break;
+            case 'B':
+                width_len = (b = va_arg(fmtargs, int)) ? 4 : 5;
                 break;
             }
 
@@ -117,7 +121,8 @@ namespace std
                 while (*str)
                     print(*str++);
                 break;
-            case 'p':
+            case 'p': 
+            {
                 uint64_t v = (uint64_t)va_arg(fmtargs, void*);
                 size_t index = 0;
                 while (v)
@@ -128,6 +133,24 @@ namespace std
 
                 for (int i = sizeof(void*) * 2 - 1; i >= 0; i--)
                     print(buf[i]);
+                break;
+            }
+            case 'B':
+                if(b)
+                {
+                    print('t');
+                    print('r');
+                    print('u');
+                    print('e');
+                }
+                else
+                {
+                    print('f');
+                    print('a');
+                    print('l');
+                    print('s');
+                    print('e');
+                }
             }
 
             if (cmd.flags & LEFT)
@@ -362,7 +385,7 @@ namespace std
                 break;
             }
 
-            if (*format == 'c' || *format == 's' || *format == 'p')
+            if (*format == 'c' || *format == 's' || *format == 'p' || *format == 'B')
             {
                 if (len != NORMAL)
                     detail::errors::__printf_undefined_specifier_for_length();
